@@ -1,0 +1,17 @@
+# dependencies
+node_modules/
+
+# environment variables
+.env
+
+# build folders
+dist/
+build/
+
+# uploads (important for your multer files)
+uploads/
+
+# logs
+npm-debug.log*
+yarn-debug.log*
+yarn-error.log*
