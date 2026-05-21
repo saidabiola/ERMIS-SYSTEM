@@ -12,7 +12,7 @@ function Dashboard({ role, setRole}){
                 {role === "ADMIN" && <p>Admin Panel</p>}
                 {role === "RECORDS OFFICER" && (
                     <div>
-                        <h3 classname = "semi-bold">Records Officer Panel</h3>
+                        <h3 className = "semi-bold">Records Officer Panel</h3>
                         <p>Upload and search exam records</p>
 
                         <button onClick = {() => navigate("/records")}

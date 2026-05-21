@@ -1,17 +1,28 @@
 import { useEffect, useState } from "react";
-
+import RecordsTable from "../components/records/RecordsTable";
+import { data } from "react-router-dom";
 
 function Records() {
-    const [studentName, setStudentName] = useState("");
-    const [studentIndexNumber, setStudentIndexNumber] = useState("");
+    const [nameOfSchool, setNameOfSchool] = useState("");
+    const [schoolCode, setSchoolCode] = useState("");
     const [yearOfGraduation, setYearOfGraduation] = useState("");
     const [records, setRecords] = useState([]);
       
     useEffect(() => {
         fetch("http://localhost:5000/records")
             .then(res => res.json())
-            .then(data => setRecords(data))
-            .catch(err => console.log(err));
+            .then(data => {
+                if (Array.isArray(data)){
+                setRecords(data);
+                } else {
+                    console.error("Expected an array but got:", data);
+                    setRecords([]);
+                } 
+            })
+            .catch(err => {
+                console.log(err);
+                setRecords([]);
+            });
     }, []);
     const [searchTerm, setSearchTerm] = useState("");
     const [file, setFile] = useState(null);
@@ -19,34 +30,38 @@ function Records() {
     const handleSubmit = async (e) => {
         e.preventDefault();
 
+        if (!nameOfSchool || !schoolCode || !yearOfGraduation){
+            alert("All fields are required")
+            return;
+        }
         const formData = new FormData();
-        formData.append("studentName", studentName);
-        formData.append("studentIndexNumber", studentIndexNumber);
-        formData.append("yearOfGraduation", yearOfGraduation);
+        formData.append("nameOfSchool", nameOfSchool);
+        formData.append("schoolCode", schoolCode);
+        formData.append("yearOfGraduation", Number(yearOfGraduation));
         if (file) {
             formData.append("file", file);
         }
         
-        {
-            studentName,
-            studentIndexNumber,
-            yearOfGraduation,
-            file
-        };
+        
 
         try {
             const response = await fetch ("http://localhost:5000/records", {
                 method: "POST",
-                body: formData
+                body: formData,
             });
             const data = await response.json();
 
+            if (!response.ok){
+                console.log(alert("Server error", data))
+                return;
+            }
+            
             // update UI with new save Record
-            setRecords([...records, data]);
-
-             // clear form fields (input)
-            setStudentName("");
-            setStudentIndexNumber("");
+            setRecords(prev => [...prev,data]);
+            
+            // clear form fields (input)
+            setNameOfSchool("");
+            setSchoolCode("");
             setYearOfGraduation("");
             setFile(null);
         } catch (error) {
@@ -58,39 +73,39 @@ function Records() {
 
     const filteredRecords = records.filter((record) => {
         return (
-            String(record.studentName?.toLowerCase()).includes(searchTerm.toLowerCase()) || 
-            String(record.studentIndexNumber).includes(searchTerm) ||
+            String(record.nameOfSchool || "").toLowerCase().includes(searchTerm.toLowerCase()) || 
+            String(record.schoolCode).includes(searchTerm) ||
             String(record.yearOfGraduation).includes(searchTerm)
             );
     });
 
     return (
         <div className = "min-h-screen bg-blue-100 p-6">
-            <h2 className="text-2xl font-bold mb-6">Records Management</h2>
+            <h2 className="text-2xl font-bold mb-6 mx-auto">Records Management</h2>
          
             { /*Form to add new record */ }
 
-            <form onSubmit = {handleSubmit} className = "bg-white p-6 rounded-xl shadow-md max-w-md">
+            <form onSubmit = {handleSubmit} className = "bg-white p-6 rounded-xl shadow-md max-w-md mx-auto">
                 <input 
                 type="text"
-                placeholder = "student Name"
-                value = {studentName}
+                placeholder = "School Name"
+                value = {nameOfSchool}
                 className = "w-full mb-4 p-3 border rounded-lg"
-                onChange = {(e) => setStudentName(e.target.value)}
+                onChange = {(e) => setNameOfSchool(e.target.value)}
                 />
 
                 <input 
                 type="text"
-                placeholder = "Index Number"
-                value = {studentIndexNumber}
+                placeholder = "School Code"
+                value = {schoolCode}
                 className = "w-full mb-4 p-3 border rounded-lg"
-                onChange = {(e) => setStudentIndexNumber(e.target.value)}
+                onChange = {(e) => setSchoolCode(e.target.value)}
                 />
 
                 
 
                 <input 
-                type = "text"
+                type = "number"
                 placeholder = "Year of graduation"
                 value = {yearOfGraduation}
                 className = "w-full mb-4 p-3 border rounded-lg"
@@ -111,92 +126,60 @@ function Records() {
 
                 <input 
                 type = "text"
-                placeholder = "Search by name, Index number, or year of graduation..."
+                placeholder = "Search by School, School Code, or year of graduation..."
                 value = {searchTerm}
                 onChange = {(e) => setSearchTerm(e.target.value)}
-                className = "w-full mb-4 p-3 border rounded-lg mx-w-md"
+                className = "w-full mb-4 p-3 border rounded-lg max-w-md"
                 />
             {/* List of records */}
 
             <div>
-                <h3 className = "text-xl font-semibold mb-4">Saved Records</h3>
+                <RecordsTable
+                    records={filteredRecords}
+                    onDelete={async (id) => {
+                        const res = await fetch(`http://localhost:5000/records/${id}`, {
+                            method: "DELETE"
+                        });
 
-                {records.length === 0 ? (
-                    <p>No Records yet</p>
-                ) : filteredRecords.length === 0 ? (
-                    <p>No records match your search</p>
-                ) : (
+                        if (res.ok){
+                            setRecords(prev => prev.filter(r => r._id !== id))
+                        }
+                    }}
 
-                    filteredRecords.map((record) => (
-                        <div key = {record._id} className = "bg-white p-4 rounded-lg shadow mb-4">
-                            <p><strong>Name:</strong> {record.studentName}</p>
-                            <p><strong>Index Number:</strong> {record.studentIndexNumber}</p>
-                            <p><strong>Year of Graduation:</strong> {record.yearOfGraduation}</p>
-                            
-                            {record.file && (
-                            <a 
-                                href = {`http://localhost:5000/uploads/${record.file}`}
-                                target = "_blank"
-                                rel = "noreferrer"
-                                className = "text-blue-600 underline"
-                            >
-                            View file
-                            
-                            </a>
-                        )}
+                    onEdit={(record) => {
+                        const newName = prompt("Please enter a new name:" , record.nameOfSchool);
 
-                        <button 
-                            onClick = {async () => {
-                                await fetch(`http://localhost:5000/records/${record._id}`,{
-                                     method: "DELETE"
-                                });
-                                   
-                                setRecords(records.filter(r => r._id !== record._id));
-                            }}
-                            className = "bg-red-500 text-white px-3 py-1 rounded mt-2"
-                        >
-                            Delete
-                        </button>
+                        if (newName) {
+                            fetch(`http://localhost:5000/records/${record._id}`, {
+                                method: "PUT",
+                                headers: {
+                                    "content-type": "application/json"
+                                },
+                                body: JSON.stringify({nameOfSchool: newName})
+                            })
 
-                        <button 
-                            onClick = {() => {
-                                const newName = prompt("Enter new name:", record.studentName);
-
-                                if (newName) {
-                                    fetch(`http://localhost:5000/records/${record._id}`,{
-                                        method: "PUT",
-                                        headers: {
-                                            "Content-Type": "application/json"
-                                        },
-                                        body: JSON.stringify({studentName: newName })
-                                    })
-                                    .then(res => res.json())
-                                    .then(updated => {
-                                        setRecords(prevRecords => prevRecords.map(r => 
-                                            r._id === updated._id ? updated : r
-                                        )
-                                    );
-                                    });
-                                }
-                            }}
-                            className = "bg-yellow-500 text-white px-3 py-1 rounded mt-2 ml-2"
-                        >
-                            Edit
-
-                        </button>
-                        </div>
+                            .then(res => res.json())
+                            .then(updated => {
+                                setRecords(prev =>
+                                    prev.map(r => r._id === updated._id ? updated: r)
+                                );
+                            });
+                        }
+                    }}
+                />
+            </div>
 
                         
-                    ))
                     
-                    )}
+                    
+                    
                      
                        
                     
                 
                 
             </div>
-        </div>
+        
     )
 };
 
