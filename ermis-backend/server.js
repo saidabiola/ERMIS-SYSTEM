@@ -46,9 +46,11 @@ const Record = require("./models/Record");
 
 app.post("/records", upload.single("file"),async (req, res) => {
     try {
+
+
         const newRecord = new Record({
-            studentName: req.body.studentName,
-            studentIndexNumber: req.body.studentIndexNumber,
+            nameOfSchool: req.body.nameOfSchool,
+            schoolCode: req.body.schoolCode,
             yearOfGraduation: req.body.yearOfGraduation,
             file: req.file ? req.file.filename : null
         });

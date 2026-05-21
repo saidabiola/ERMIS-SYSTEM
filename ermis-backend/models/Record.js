@@ -1,12 +1,12 @@
 const mongoose = require("mongoose");
 
 const recordSchema = new mongoose.Schema({
-    studentName: {
+    nameOfSchool: {
         type: String,
         required: true,
         trim: true,
     },
-    studentIndexNumber: {
+    schoolCode: {
         type: String,
         required: true,
         unique: true,
