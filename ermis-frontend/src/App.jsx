@@ -3,12 +3,12 @@ import { Routes, Route, Navigate } from "react-router-dom";
 import LoginPage from "./pages/LoginPage";
 import UnauthorizedPage from "./pages/UnauthorizedPage";
 import ProtectedRoute from "./components/auth/ProtectedRoute";
+import AdminDashboard from "./pages/admin/AdminDashboard";
 
 
 
 // Temporary Dashboard holders
 
-const AdminDashboard = () => <div className="text-white p-8">Admin Dashboard</div>
 const RecordsDashboard = () => <div className="text-white p-8">Records Officer Dashboard</div>
 const SupervisorDashboard = () => <div className="text-white p-8">Supervisor Dashboard</div>
 const ICTDashboard = () => <div className="text-white p-8">ICT Officer Dashboard</div>
