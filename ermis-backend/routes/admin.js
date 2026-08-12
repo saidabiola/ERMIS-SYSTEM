@@ -21,9 +21,7 @@ router.get('/users', async (req, res) => {
     } catch (err) {
         console.error(err);
         res.status(500).json({ message: "Server error" });
-    } finally {
-        res.json(users);
-    }
+    } 
 });
 
 //POST /api/admin/users (create a user)
