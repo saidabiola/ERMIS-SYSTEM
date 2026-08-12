@@ -1,25 +1,20 @@
-<<<<<<< HEAD
-.env
-node_modules/
-uploads/
-dist/
-build/
-=======
-# dependencies
-node_modules/
-
-# environment variables
+# Environment variables - NEVER commit these
 .env
 
-# build folders
+# Dependencies
+node_modules/
+
+# Build folders
 dist/
 build/
 
-# uploads (important for your multer files)
+# Uploads folder
 uploads/
 
-# logs
+# Logs
 npm-debug.log*
 yarn-debug.log*
 yarn-error.log*
->>>>>>> 3fb8e29b238744323fc9480bf7913b383ccb7d04
+
+# Docker
+.dockerignore

@@ -20,6 +20,12 @@ const recordSchema = new mongoose.Schema({
         type: String,
         default: "",
     },
+
+    uploadedBy: {
+        type: mongoose.Schema.Types.ObjectId,
+        ref: 'User',
+        required: false
+    },
     
     role: {
         type: String,

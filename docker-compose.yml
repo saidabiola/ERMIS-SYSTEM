@@ -1,0 +1,28 @@
+version: '3.8'
+
+services:
+  ermis-backend:
+    build: ./ermis-backend
+    container_name: ermis-backend
+    ports:
+      - "5000:5000"
+    env_file:
+      - ./ermis-backend/.env
+    restart: always
+    networks:
+      - ermis-network
+
+  ermis-frontend:
+    build: ./ermis-frontend
+    container_name: ermis-frontend
+    ports:
+      - "80:80"
+    depends_on:
+      - ermis-backend
+    restart: always
+    networks:
+      - ermis-network
+
+networks:
+  ermis-network:
+    driver: bridge

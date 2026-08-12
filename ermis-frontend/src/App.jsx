@@ -4,14 +4,12 @@ import LoginPage from "./pages/LoginPage";
 import UnauthorizedPage from "./pages/UnauthorizedPage";
 import ProtectedRoute from "./components/auth/ProtectedRoute";
 import AdminDashboard from "./pages/admin/AdminDashboard";
+import RecordsDashboard from "./pages/records/RecordsDashboard";
+import SupervisorDashboard from "./pages/supervisor/SupervisorDashboard";
+import ICTDashboard from "./pages/ict/ICTDashboard";
 
 
 
-// Temporary Dashboard holders
-
-const RecordsDashboard = () => <div className="text-white p-8">Records Officer Dashboard</div>
-const SupervisorDashboard = () => <div className="text-white p-8">Supervisor Dashboard</div>
-const ICTDashboard = () => <div className="text-white p-8">ICT Officer Dashboard</div>
 
 
 
@@ -21,7 +19,7 @@ function App(){
 
       <Routes>
         { /* Public routes */ }
-        <Route path="/" element = {<LoginPage />} />
+        <Route path = "/" element = {<LoginPage />} />
         <Route path = "Unauthorized" element = {<UnauthorizedPage />} />
 
         {/* protected routes, each locked to its specific role */}
