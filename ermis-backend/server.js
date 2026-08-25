@@ -14,8 +14,8 @@ const recordRoutes = require('./routes/records');
 const app = express();
 
 mongoose.connect(process.env.MONGO_URI)
-    .then(() => console.log("Connected to MongoDB..."))
-    .catch(err => console.log(err));
+.then(() => console.log("Connected to MongoDB..."))
+.catch(err => console.log(err));
 
 
 
