@@ -1,36 +1,10 @@
-const express = require('express');
-const jwt = require('jsonwebtoken');
-const bcrypt = require('bcrypt');
-const User = require('../models/User')
+const express = require("express");
+const authController = require("../controllers/authController");
 
+const router = express.Router();
 
-
-const router = express.Router()
-
-router.post('/login', async (req, res) => {
-    
-    try {
-        const { email, password } = req.body;
-
-        const user = await User.findOne({ email, isActive: true });
-            if (!user) return res.status(401).json({ message: 'Wrong email and or password' });
-
-        const valid = await bcrypt.compare(password, user.password);
-            if (!valid) return res.status(401).json({ message: 'Wrong email and or password' });
-
-        const token = jwt.sign(
-            { id:user._id, role: user.role, name: user.name },
-            process.env.JWT_SECRET,
-            { expiresIn: '8h'}
-    );
-
-    // send token and role back to frontend
-    res.json({ token, role: user.role, name: user.name });
-
-} catch (err) {
-    console.error('Login error:', err);
-        res.status(500).json({ message: 'Server error, please try again' });
-}
-});
+router.post("/login", authController.login);
+router.post("/refresh", authController.refresh);
+router.post("/logout", authController.logout);
 
 module.exports = router;

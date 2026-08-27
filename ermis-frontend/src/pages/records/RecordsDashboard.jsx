@@ -64,7 +64,7 @@ function RecordsDashboard(){
 
     return (
         
-    <div className="min-h-screen bg-slate-950 flex overflow-hidden">
+    <div className="min-h-screen bg-canvas flex overflow-hidden">
 
       <RecordsSidebar user={currentUser} />
 
@@ -73,7 +73,7 @@ function RecordsDashboard(){
         {/* Header */}
         <div className="flex items-center justify-between mb-6">
           <div>
-            <h1 className="text-lg font-medium text-slate-100">
+            <h1 className="text-lg font-medium text-slate-900">
               Records management
             </h1>
             <p className="text-sm text-slate-500 mt-0.5">
@@ -91,38 +91,38 @@ function RecordsDashboard(){
 
         {/* Stats */}
         <div className="grid grid-cols-3 gap-3 mb-6">
-          <div className="bg-white/[0.03] border border-white/[0.07] rounded-xl p-4">
+          <div className="bg-surface border border-line shadow-panel rounded-xl p-4">
             <p className="text-[11px] text-slate-500 mb-1.5">Total records</p>
-            <p className="text-2xl font-medium text-slate-200">{records.length}</p>
+            <p className="text-2xl font-medium text-slate-800">{records.length}</p>
           </div>
-          <div className="bg-white/[0.03] border border-white/[0.07] rounded-xl p-4">
+          <div className="bg-surface border border-line shadow-panel rounded-xl p-4">
             <p className="text-[11px] text-slate-500 mb-1.5">With attachments</p>
-            <p className="text-2xl font-medium text-teal-400">
+            <p className="text-2xl font-medium text-teal-600">
               {records.filter(r => r.file).length}
             </p>
           </div>
-          <div className="bg-white/[0.03] border border-white/[0.07] rounded-xl p-4">
+          <div className="bg-surface border border-line shadow-panel rounded-xl p-4">
             <p className="text-[11px] text-slate-500 mb-1.5">Search results</p>
-            <p className="text-2xl font-medium text-indigo-400">
+            <p className="text-2xl font-medium text-indigo-600">
               {search ? records.length : '—'}
             </p>
           </div>
         </div>
 
         {/* Search bar */}
-        <div className="flex items-center gap-2.5 bg-white/[0.04] border border-white/[0.08] rounded-lg px-3 h-10 mb-4 focus-within:border-teal-500/50 transition">
+        <div className="flex items-center gap-2.5 bg-surface border border-line rounded-lg px-3 h-10 mb-4 focus-within:border-teal-500/50 transition">
           <i className="ti ti-search text-slate-500" style={{fontSize: 15}} aria-hidden="true"></i>
           <input
             type="text"
             placeholder="Search by school name, code or year..."
             value={search}
             onChange={handleSearch}
-            className="flex-1 bg-transparent text-sm text-slate-200 placeholder:text-slate-600 outline-none"
+            className="flex-1 bg-transparent text-sm text-slate-800 placeholder:text-slate-400 outline-none"
           />
           {search && (
             <button
               onClick={() => { setSearch(''); fetchRecords(); }}
-              className="text-slate-500 hover:text-slate-300 transition"
+              className="text-slate-500 hover:text-slate-700 transition"
             >
               <i className="ti ti-x" style={{fontSize: 14}} aria-hidden="true"></i>
             </button>
@@ -130,15 +130,15 @@ function RecordsDashboard(){
         </div>
 
         {/* Records table */}
-        <div className="bg-white/[0.03] border border-white/[0.07] rounded-xl overflow-hidden">
-          <div className="px-5 py-4 border-b border-white/[0.06]">
-            <h2 className="text-[14px] font-medium text-slate-200">
+        <div className="bg-surface border border-line shadow-panel rounded-xl overflow-hidden">
+          <div className="px-5 py-4 border-b border-line">
+            <h2 className="text-[14px] font-medium text-slate-800">
               {search ? `Results for "${search}"` : 'All records'}
             </h2>
           </div>
 
           {error && (
-            <p className="text-red-400 text-sm text-center py-4">{error}</p>
+            <p className="text-red-600 text-sm text-center py-4">{error}</p>
           )}
 
           {loading ? (
@@ -153,13 +153,13 @@ function RecordsDashboard(){
 
         {/* View record detail */}
         {viewingRecord && (
-          <div className="fixed inset-0 bg-black/60 flex items-center justify-center z-50 px-4">
-            <div className="bg-slate-900 border border-white/10 rounded-2xl w-full max-w-md p-6">
+          <div className="fixed inset-0 bg-slate-900/40 flex items-center justify-center z-50 px-4">
+            <div className="bg-surface shadow-modal border border-line rounded-2xl w-full max-w-md p-6">
               <div className="flex items-center justify-between mb-5">
-                <h3 className="text-[15px] font-medium text-slate-200">Record details</h3>
+                <h3 className="text-[15px] font-medium text-slate-800">Record details</h3>
                 <button
                   onClick={() => setViewingRecord(null)}
-                  className="text-slate-500 hover:text-slate-300 transition"
+                  className="text-slate-500 hover:text-slate-700 transition"
                 >
                   <i className="ti ti-x" style={{fontSize: 18}} aria-hidden="true"></i>
                 </button>
@@ -172,9 +172,9 @@ function RecordsDashboard(){
                   { label: 'Year of graduation',value: viewingRecord.yearOfGraduation },
                   { label: 'Uploaded on',       value: new Date(viewingRecord.createdAt).toLocaleDateString('en-GB', { day: '2-digit', month: 'long', year: 'numeric' }) },
                 ].map(item => (
-                  <div key={item.label} className="flex justify-between items-center py-2 border-b border-white/[0.05]">
+                  <div key={item.label} className="flex justify-between items-center py-2 border-b border-line-subtle">
                     <span className="text-xs text-slate-500">{item.label}</span>
-                    <span className="text-sm text-slate-300">{item.value}</span>
+                    <span className="text-sm text-slate-700">{item.value}</span>
                   </div>
                 ))}
 
@@ -186,7 +186,7 @@ function RecordsDashboard(){
                       href={`/uploads/${viewingRecord.file}`}
                       target="_blank"
                       rel="noreferrer"
-                      className="flex items-center gap-1.5 text-teal-400 text-sm hover:text-teal-300 transition"
+                      className="flex items-center gap-1.5 text-teal-600 text-sm hover:text-teal-700 transition"
                     >
                       <i className="ti ti-download" style={{fontSize: 14}} aria-hidden="true"></i>
                       Download file
@@ -199,7 +199,7 @@ function RecordsDashboard(){
 
               <button
                 onClick={() => setViewingRecord(null)}
-                className="w-full h-10 mt-5 border border-white/10 rounded-lg text-sm text-slate-400 hover:text-slate-200 hover:border-white/20 transition"
+                className="w-full h-10 mt-5 border border-line rounded-lg text-sm text-slate-400 hover:text-slate-800 hover:border-slate-300 transition"
               >
                 Close
               </button>

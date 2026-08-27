@@ -93,14 +93,14 @@ function ICTDashboard() {
             const StatusBadge = ({ status }) => {
                 if (status === 'online')
                     return (
-                <span className = "flex items-center gap-1.5 text-green-400 text-[12px]">
+                <span className = "flex items-center gap-1.5 text-green-600 text-[12px]">
                     <IconCircleCheck size = {13} /> Online
                 </span>
             );
 
             if (status === 'error')
                 return (
-                    <span className = "flex items-center gap-1.5 text-red-400 text-[12px]">
+                    <span className = "flex items-center gap-1.5 text-red-600 text-[12px]">
                         <IconAlertTriangle size = {13} /> Error
                     </span>
                 );
@@ -111,7 +111,7 @@ function ICTDashboard() {
             };
         
             return (
-                <div className = "min-h-screen bg-slate-950 flex overflow-hidden">
+                <div className = "min-h-screen bg-canvas flex overflow-hidden">
 
                     <ICTSidebar user = {currentUser} />
 
@@ -120,8 +120,8 @@ function ICTDashboard() {
                         {/* Header */}
 
                         <div className = "mb-6">
-                            <h1 text-lg font-medium text-slate-100>
-                                Good morning, {currentUser?.name} 👋 
+                            <h1 className = "text-lg font-medium text-slate-900">
+                                Good morning, {currentUser?.name}
                             </h1>
 
                             <p className = "text-sm text-slate-500 mt-0.5">
@@ -133,26 +133,26 @@ function ICTDashboard() {
                         {/* Stats */}
 
                         <div className = "grid grid-cols-4 gap-3 mb-6">
-                            <div className = "bg-white/[0.03] border-white/0.07] rounded-xl p-4">
+                            <div className = "bg-surface border border-line shadow-panel rounded-xl p-4">
                                 <p className="text-[11px] text-slate-500 mb-1.5">Server</p>
 
                                     <StatusBadge status = {serverStatus} />
 
                             </div>
 
-                            <div className="bg-white/[0.03] border border-white/[0.07] rounded-xl p-4">
+                            <div className="bg-surface border border-line shadow-panel rounded-xl p-4">
                                 <p className="text-[11px] text-slate-500 mb-1.5">Database</p>
                                     <StatusBadge status = {dbStatus} />
                             </div>
 
-                            <div className="bg-white/[0.03] border border-white/[0.07] rounded-xl p-4">
+                            <div className="bg-surface border border-line shadow-panel rounded-xl p-4">
                                 <p className="text-[11px] text-slate-500 mb-1.5">Total reocords</p>
-                                <p className="text-2xl font-medium text-slate-200">{records}</p>
+                                <p className="text-2xl font-medium text-slate-800">{records}</p>
                             </div>
 
-                            <div className="bg-white/[0.03] border border-white/[0.07] rounded-xl p-4">
+                            <div className="bg-surface border border-line shadow-panel rounded-xl p-4">
                                 <p className="text-[11px] text-slate-500 mb-1.5">Last backup</p>
-                                <p className="text-[13px] font-medium text-pink-400">10 Aug 2026</p>
+                                <p className="text-[13px] font-medium text-pink-600">10 Aug 2026</p>
                             </div>
                         </div>
 
@@ -160,17 +160,17 @@ function ICTDashboard() {
 
                             {/* Backup control */}
 
-                            <div className="bg-white/[0.03] border border-white/[0.07] rounded-xl overflow-hidden">
-                                <div className="flex items-center gap-2 px-5 py-4 border-b border-white/[0.06]">
-                                    <IconDatabaseExport size = {15} className = "text-pink-400" />
-                                    <h2 className = "text-[14px]" font-medium text-slate-200>
+                            <div className="bg-surface border border-line shadow-panel rounded-xl overflow-hidden">
+                                <div className="flex items-center gap-2 px-5 py-4 border-b border-line">
+                                    <IconDatabaseExport size = {15} className = "text-pink-600" />
+                                    <h2 className = "text-[14px] font-medium text-slate-800">
                                         Database backup
                                     </h2>
 
                                 </div>
 
                                 <div className = "p-5">
-                                    <p className = "text-[13px] text-slate-400 mb-5">
+                                    <p className = "text-[13px] text-slate-500 mb-5">
                                         Create a full backup of the MongoDB database including all records, users and system data.
                                     </p>
 
@@ -209,7 +209,7 @@ function ICTDashboard() {
                                     
                                     <button
                                         onClick = {checkSystemHealth}
-                                        className = "w-full h-10 mt-3 border border-white/10 rounded-lg text-[13px] text-slate-400 hover:text-slate-200 hover:border-white/20 flex items-center justify-center gap-2 transition"
+                                        className = "w-full h-10 mt-3 border border-line rounded-lg text-[13px] text-slate-400 hover:text-slate-800 hover:border-slate-300 flex items-center justify-center gap-2 transition"
                                     >
                                         <IconRefresh size = {14} />
                                         Refresh system status

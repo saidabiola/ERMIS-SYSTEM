@@ -1,42 +1,48 @@
 import { useState } from "react";
 import { useNavigate } from "react-router-dom";
+import { setAccessToken } from "../../utils/auth";
 
-
-export default function LoginForm() {
+export default function LoginForm({ embedded = false }) {
   const [showPassword, setShowPassword] = useState(false);
   const [form, setForm] = useState({ email: "", password: "" });
   const [loading, setLoading] = useState(false);
   const [error, setError] = useState('');
-  
-  const navigate = useNavigate();
 
+  const navigate = useNavigate();
 
   const handleSubmit = async (e) => {
     e.preventDefault();
     setLoading(true);
+    setError('');
 
-
-    // TODO: connect to your Express /api/auth/login endpoint
-     
     try {
       const res = await fetch('/api/auth/login', {
         method: 'POST',
-        headers: { 'Content-Type': 'application/json'},
-        body: JSON.stringify(form)
+        headers: { 'Content-Type': 'application/json' },
+        credentials: 'include',
+        body: JSON.stringify(form),
+        signal: AbortSignal.timeout(15000),
       });
 
-      const data = await res.json();
+      let data = {};
+      try {
+        data = await res.json();
+      } catch {
+        throw new Error('Invalid response from server');
+      }
 
       if (!res.ok) {
-        setError(data.message);
+        setError(data.message || 'Login failed. Please try again.');
         return;
       }
 
-      //Store Token
+      if (!data.accessToken || !data.role) {
+        setError('Login response was incomplete. Please try again.');
+        return;
+      }
 
-      localStorage.setItem('token', data.token);
-
-      //Role-based redirect lives here
+      // Access token in localStorage; refresh token is httpOnly cookie
+      setAccessToken(data.accessToken);
 
       const routes = {
         admin: '/dashboard/admin',
@@ -45,33 +51,40 @@ export default function LoginForm() {
         ict_officer: '/dashboard/ict',
       };
 
-      navigate(routes[data.role]);
+      const dest = routes[data.role];
+      if (!dest) {
+        setError('Unknown user role. Contact an administrator.');
+        return;
+      }
 
+      navigate(dest);
     } catch (err) {
-      console.error('Login error:', err)
-      setError('Server error. Please try again');
-
+      console.error('Login error:', err);
+      if (err.name === 'TimeoutError' || err.name === 'AbortError') {
+        setError('Server took too long to respond. Check that the backend can reach the database.');
+      } else {
+        setError('Server error. Please try again.');
+      }
     } finally {
       setLoading(false);
     }
-
   };
 
-  return (
-    <div className="bg-white/[0.04] border border-white/10 rounded-2xl p-7">
-      <h2 className="text-[15px] font-medium text-slate-200 mb-5">
-        Sign in to your account
-      </h2>
+  const body = (
+    <>
+      {!embedded && (
+        <h2 className="text-[15px] font-medium text-slate-800 mb-5">
+          Sign in to your account
+        </h2>
+      )}
 
       <form onSubmit={handleSubmit} className="space-y-4">
-
-        {/* Email */}
         <div>
-          <label className="block text-xs text-slate-400 mb-1.5 tracking-wide">
+          <label className="block text-xs text-slate-500 mb-1.5 tracking-wide">
             Email address
           </label>
-          <div className="flex items-center gap-2.5 bg-white/[0.06] border border-white/10 rounded-lg px-3 h-10
-                          focus-within:border-indigo-500/60 focus-within:ring-1 focus-within:ring-indigo-500/30 transition">
+          <div className="flex items-center gap-2.5 bg-slate-50 border border-slate-200 rounded-lg px-3 h-10
+                          focus-within:border-teal-500 focus-within:ring-2 focus-within:ring-teal-500/20 transition">
             <MailIcon />
             <input
               type="email"
@@ -80,23 +93,22 @@ export default function LoginForm() {
               onChange={(e) => {
                 setForm({ ...form, email: e.target.value });
                 setError('');
-            }}
+              }}
               required
-              className="flex-1 bg-transparent text-sm text-slate-200 placeholder:text-slate-600 outline-none"
+              className="flex-1 bg-transparent text-sm text-slate-800 placeholder:text-slate-400 outline-none"
             />
           </div>
         </div>
 
-        {/* Password */}
         <div>
           <div className="flex justify-between items-center mb-1.5">
-            <label className="text-xs text-slate-400 tracking-wide">Password</label>
-            <button type="button" className="text-xs text-indigo-400 hover:text-indigo-300 transition">
+            <label className="text-xs text-slate-500 tracking-wide">Password</label>
+            <button type="button" className="text-xs text-teal-700 hover:text-teal-800 transition">
               Forgot password?
             </button>
           </div>
-          <div className="flex items-center gap-2.5 bg-white/[0.06] border border-white/10 rounded-lg px-3 h-10
-                          focus-within:border-indigo-500/60 focus-within:ring-1 focus-within:ring-indigo-500/30 transition">
+          <div className="flex items-center gap-2.5 bg-slate-50 border border-slate-200 rounded-lg px-3 h-10
+                          focus-within:border-teal-500 focus-within:ring-2 focus-within:ring-teal-500/20 transition">
             <LockIcon />
             <input
               type={showPassword ? "text" : "password"}
@@ -107,42 +119,52 @@ export default function LoginForm() {
                 setError('');
               }}
               required
-              className="flex-1 bg-transparent text-sm text-slate-200 placeholder:text-slate-600 outline-none"
+              className="flex-1 bg-transparent text-sm text-slate-800 placeholder:text-slate-400 outline-none"
             />
-            <button type="button" onClick={() => setShowPassword(!showPassword)}
-              className="text-slate-500 hover:text-slate-300 transition">
-              {showPassword ? <EyeOffIcon /> : <EyeIcon />}
+            <button
+              type="button"
+              onClick={() => setShowPassword(!showPassword)}
+              className="text-slate-500 hover:text-slate-700 transition"
+            >
+              {showPassword ? <EyeIcon /> : <EyeOffIcon />}
             </button>
-
-            
           </div>
         </div>
 
-            {error && (
-              <p className="text-red-400 text-xs text-center -mt-2">
-                {error}
-              </p>
-            )}
+        {error && (
+          <p className="text-red-600 text-xs text-center -mt-2">
+            {error}
+          </p>
+        )}
 
-        {/* Submit */}
         <button
           type="submit"
           disabled={loading}
-          className="w-full h-10 bg-indigo-600 hover:bg-indigo-500 disabled:opacity-60
-                     rounded-lg text-sm font-medium text-white transition flex items-center justify-center gap-2 mt-2"
+          className="w-full h-11 bg-teal-600 hover:bg-teal-500 disabled:opacity-60
+                     rounded-lg text-sm font-semibold text-white shadow-md shadow-teal-700/20
+                     transition flex items-center justify-center gap-2 mt-2"
         >
           {loading ? <Spinner /> : "Sign in"}
         </button>
       </form>
 
-      <p className="text-center text-xs text-slate-600 mt-5">
+      <p className="text-center text-xs text-slate-400 mt-5">
         Secured by ExamTrack · Authorized users only
       </p>
+    </>
+  );
+
+  if (embedded) {
+    return <div>{body}</div>;
+  }
+
+  return (
+    <div className="bg-white rounded-2xl p-7 shadow-2xl border border-slate-100">
+      {body}
     </div>
   );
 }
 
-// --- Inline icon components ---
 const MailIcon = () => (
   <svg className="w-4 h-4 text-slate-500 shrink-0" fill="none" stroke="currentColor" viewBox="0 0 24 24">
     <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={1.8}

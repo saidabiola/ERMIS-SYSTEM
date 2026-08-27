@@ -1,4 +1,4 @@
-const jwt = require('jsonwebtoken');
+const { verifyAccessToken } = require('../utils/tokens');
 
 const protect = (req, res, next) => {
 
@@ -14,8 +14,8 @@ const protect = (req, res, next) => {
         //extract the token (remove "Bearer " prefix)
         const token = authHeader.split(' ')[1];
 
-        //verify and decode the token
-        const decoded = jwt.verify(token, process.env.JWT_SECRET);
+        //verify and decode the access token
+        const decoded = verifyAccessToken(token);
 
         //attach user info to the request object
         req.user = decoded;

@@ -1,3 +1,114 @@
 @tailwind base;
 @tailwind components;
 @tailwind utilities;
+
+/*
+  ExamTrack — internal education tool palette
+  Cool slate surfaces, calm contrast for long work sessions.
+*/
+:root {
+  --ermis-canvas: #f1f4f8;
+  --ermis-surface: #ffffff;
+  --ermis-muted: #f7f9fc;
+  --ermis-border: #e2e8f0;
+  --ermis-border-subtle: #eef2f7;
+  --ermis-ink: #0f172a;
+  --ermis-ink-muted: #64748b;
+  --ermis-accent: #4f46e5;
+}
+
+@layer base {
+  html,
+  body,
+  #root {
+    min-height: 100%;
+  }
+
+  body {
+    margin: 0;
+    background-color: var(--ermis-canvas);
+    color: var(--ermis-ink);
+    -webkit-font-smoothing: antialiased;
+    -moz-osx-font-smoothing: grayscale;
+  }
+}
+
+/* Login welcome atmosphere */
+@layer utilities {
+  .login-orb {
+    position: absolute;
+    border-radius: 9999px;
+    pointer-events: none;
+  }
+
+  .login-orb-a {
+    animation: login-drift-a 12s ease-in-out infinite;
+  }
+
+  .login-orb-b {
+    animation: login-drift-b 16s ease-in-out infinite;
+  }
+
+  .login-orb-c {
+    animation: login-drift-c 10s ease-in-out infinite;
+  }
+
+  .login-brand-in {
+    animation: login-rise 0.7s ease-out both;
+  }
+
+  .login-card-in {
+    animation: login-rise 0.75s ease-out 0.08s both;
+  }
+}
+
+@keyframes login-drift-a {
+  0%,
+  100% {
+    transform: translate(0, 0) scale(1);
+  }
+  50% {
+    transform: translate(-18px, 22px) scale(1.04);
+  }
+}
+
+@keyframes login-drift-b {
+  0%,
+  100% {
+    transform: translate(0, 0) scale(1);
+  }
+  50% {
+    transform: translate(20px, -16px) scale(1.05);
+  }
+}
+
+@keyframes login-drift-c {
+  0%,
+  100% {
+    transform: translate(0, 0);
+  }
+  50% {
+    transform: translate(-12px, -10px);
+  }
+}
+
+@keyframes login-rise {
+  from {
+    opacity: 0;
+    transform: translateY(10px);
+  }
+  to {
+    opacity: 1;
+    transform: translateY(0);
+  }
+}
+
+@media (prefers-reduced-motion: reduce) {
+  .login-orb-a,
+  .login-orb-b,
+  .login-orb-c,
+  .login-brand-in,
+  .login-card-in {
+    animation: none;
+  }
+}

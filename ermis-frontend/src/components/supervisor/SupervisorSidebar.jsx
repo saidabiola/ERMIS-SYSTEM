@@ -7,13 +7,14 @@ import {
     IconSchool,
     IconLogout,
 } from "@tabler/icons-react";
+import { logout } from "../../utils/auth";
 
 function SupervisorSidebar({ user }) {
     const navigate = useNavigate();
     const location = useLocation();
 
-    const handleLogout = () => {
-        localStorage.removeItem('token');
+    const handleLogout = async () => {
+        await logout();
         navigate('/');
     };
 
@@ -31,23 +32,23 @@ function SupervisorSidebar({ user }) {
         .toUpperCase() || 'SV';
 
         return (
-            <div className = "w-56 min-h-screen bg-slate-950 border-r border-white/[0.06] flex flex-col px-3 py-5 shrink-0">
+            <div className = "w-56 min-h-screen bg-surface border-r border-line flex flex-col px-3 py-5 shrink-0">
 
                 {/* Logo */}
                 <div className = "flex items-center gap-2.5 px-2 mb-6">
-                    <div className = "w-8 h-8 rounded-lg bg-amber-500/20 border border-amber-500/30 flex items-center justify-center">
-                        <IconSchool size = {16} className = "text-amber-400" />
+                    <div className = "w-8 h-8 rounded-lg bg-amber-50 border border-amber-200 flex items-center justify-center">
+                        <IconSchool size = {16} className = "text-amber-600" />
                     </div>
 
                     <div>
-                        <p className = "text-sm font-medium text-slate-100">ExamTrack</p>
+                        <p className = "text-sm font-medium text-slate-900">ExamTrack</p>
                         <p className = "text-[11px] text-slate-600">Supervisor Portal</p>
                     </div>
 
                 </div>
 
                 {/* Nav */}
-                <p className = "text-[10px] text-slate-700 uppercase track-widest px-3 mb-1.5">Supervisor</p>
+                <p className = "text-[10px] text-slate-400 uppercase track-widest px-3 mb-1.5">Supervisor</p>
 
                 {navItems.map(item => {
                     const Icon = item.icon
@@ -57,8 +58,8 @@ function SupervisorSidebar({ user }) {
                             onClick = {() => navigate(item.path)}
                             className = {`flex items-center gap-2.5 px-3 py-2 rounded-lg text-[13px] mb-0.5 w-full text-left transition
                             ${location.pathname === item.path
-                            ? 'bg-amber-500/15 text-amber-400'
-                            : 'text-slate-400 hover:bg-white/[0.06] hover:text-slate-200'
+                            ? 'bg-amber-50 text-amber-700'
+                            : 'text-slate-400 hover:bg-muted hover:text-slate-800'
                     }`}
                         >
                             <Icon size = {15} />
@@ -70,15 +71,15 @@ function SupervisorSidebar({ user }) {
 
                 {/* Logout */}
 
-                <div className = "mt-auto pt-4 border-t border-white/[0.06]">
+                <div className = "mt-auto pt-4 border-t border-line">
                     <div className = "flex items-center gap-2.5 px-3 py-2 mb-1">
-                        <div className = "w-7 h-7 rounded-full bg-amber-500/20 flex items-center justify-center text-[11px] font-medium text-amber-400 shrink-0">
+                        <div className = "w-7 h-7 rounded-full bg-amber-50 flex items-center justify-center text-[11px] font-medium text-amber-600 shrink-0">
                             {initials}
 
                         </div>
 
                         <div className = "overflow-hidden">
-                            <p className = "text-[12px] text-slate-300 truncate">{user?.name}</p>
+                            <p className = "text-[12px] text-slate-700 truncate">{user?.name}</p>
                             <p className = "text-[11px] text-slate-600 truncate">{user?.email}</p>
 
                         </div>
@@ -87,7 +88,7 @@ function SupervisorSidebar({ user }) {
 
                     <button
                         onClick = {handleLogout}
-                        className = "flex items-center gap-2.5 px-3 py-2 rounded-lg text-[13px] w-full text-left  text-red-400  hover:bg-red-500/10"
+                        className = "flex items-center gap-2.5 px-3 py-2 rounded-lg text-[13px] w-full text-left  text-red-600  hover:bg-red-50"
                     >
                         <IconLogout size = {15} />
                         Logout

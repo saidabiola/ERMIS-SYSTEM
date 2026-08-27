@@ -29,11 +29,11 @@ export default function AddUserModal({ onClose, onSubmit }) {
     };
 
     return (
-        <div className = "fixed inset-0 bg-black/60 flex items-center justify-center z-50 px-4">
-            <div className = "bg-slate-900 border border-white/10 rounded-2xl w-full max-w-md p-6">
+        <div className = "fixed inset-0 bg-slate-900/40 flex items-center justify-center z-50 px-4">
+            <div className = "bg-surface shadow-modal border border-line rounded-2xl w-full max-w-md p-6">
                 <div className = "flex items-center justify-between mb-5">
-                    <h3 className = "text-[15px] font-medium text-slate-200">Add new user</h3>
-                    <button onClick = {onClose} className = "text-slate-500 hover:text-slate-300 transition">
+                    <h3 className = "text-[15px] font-medium text-slate-800">Add new user</h3>
+                    <button onClick = {onClose} className = "text-slate-500 hover:text-slate-700 transition">
                         <i className = "ti ti-x" style= {{ fontSize: 18 }} aria-hidden = "true"></i>
 
                     </button>
@@ -51,7 +51,7 @@ export default function AddUserModal({ onClose, onSubmit }) {
                             value = {form.name}
                             onChange = {e => setForm({ ...form, name: e.target.value})}
                             required
-                            className = "w-full bg-white/[0.06] border border-white/10 rounded-lg px-3 h-10 text-sm text-slate-200 placeholder:text-slate-600 outline-none focus:border-indigo-500/60 focus:ring-indigo-500/30 transition"
+                            className = "w-full bg-muted border border-line rounded-lg px-3 h-10 text-sm text-slate-800 placeholder:text-slate-400 outline-none focus:border-indigo-500/60 focus:ring-indigo-500/30 transition"
                             />
                     </div>
 
@@ -65,7 +65,7 @@ export default function AddUserModal({ onClose, onSubmit }) {
                             value = {form.email}
                             onChange = {e => setForm({ ...form, email: e.target.value })}
                             required
-                            className = "w-full bg-white/[0.06] border border-white/10 rounded-lg px-3 h-10 text-sm text-slate-200 placeholder:text-slate-600 outline-none focus:border-indigo-500/60 focus:ring-indigo-500/30 transition"
+                            className = "w-full bg-muted border border-line rounded-lg px-3 h-10 text-sm text-slate-800 placeholder:text-slate-400 outline-none focus:border-indigo-500/60 focus:ring-indigo-500/30 transition"
                         />
                     </div>
 
@@ -75,7 +75,7 @@ export default function AddUserModal({ onClose, onSubmit }) {
                         <select
                             value = {form.role}
                             onChange = {e => setForm({ ...form, role: e.target.value })}
-                            className = "w-full bg-slate-800 border border-white/10 rounded-lg px-3 h-10 text-sm text-slate-200 outline-none focus:border-indigo-500/60 focus:ring-indigo-500/30 transition"
+                            className = "w-full bg-muted border border-line rounded-lg px-3 h-10 text-sm text-slate-800 outline-none focus:border-indigo-500/60 focus:ring-indigo-500/30 transition"
                             >
                                 {ROLES.map(r => (
                                     <option key = {r.value} value = {r.value}>{r.label}</option>
@@ -95,7 +95,7 @@ export default function AddUserModal({ onClose, onSubmit }) {
                             onChange = {e => setForm({ ...form, password: e.target.value})}
                             required
                             minLength = {8}
-                            className = "w-full bg-white/[0.06] border border-white/10 rounded-lg px-3 h-10 text-sm text-slate-200 placeholder:text-slate-600 outline-none focus:border-indigo-500/60 focus:ring-1 focus:ring-indigo-500/30 transition"
+                            className = "w-full bg-muted border border-line rounded-lg px-3 h-10 text-sm text-slate-800 placeholder:text-slate-400 outline-none focus:border-indigo-500/60 focus:ring-1 focus:ring-indigo-500/30 transition"
 
                         />
                         <p className = "text-[11px] text-slate-600 mt-1">
@@ -104,14 +104,14 @@ export default function AddUserModal({ onClose, onSubmit }) {
                     </div>
                     
                     {error && (
-                        <p className = "text-red-400 text-xs text-center">{error}</p>
+                        <p className = "text-red-600 text-xs text-center">{error}</p>
                     )}
 
                     <div className = "flex gap-3 pt-1">
                         <button 
                             type = "button"
                             onClick = {onClose}
-                            className = "flex-1 h-10 border border-white/10 rounded-lg text-sm text-slate-400 hover:text-slate-200 hover:border-white/20 transition"
+                            className = "flex-1 h-10 border border-line rounded-lg text-sm text-slate-400 hover:text-slate-800 hover:border-slate-300 transition"
                         >
                             Cancel
                         </button>

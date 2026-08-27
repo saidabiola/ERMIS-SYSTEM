@@ -1,8 +1,8 @@
 const roleBadge = {
-    admin: 'bg-indigo-500/15 text-indigo-400',
-    records_officer: 'bg-teal-500/15 text-teal-400',
-    supervisor: 'bg-amber-500/15 text-amber-400',
-    ict_officer: 'bg-pink-500/15 text-pink-400'
+    admin: 'bg-indigo-50 text-indigo-700',
+    records_officer: 'bg-teal-50 text-teal-700',
+    supervisor: 'bg-amber-50 text-amber-700',
+    ict_officer: 'bg-pink-50 text-pink-700'
 };
 
 const roleLabel = {
@@ -25,7 +25,7 @@ export default function UserTable({ users, onEdit, onDeactivate }) {
         <div className = "overflow-x-auto">
             <table className = "w-full text-sm">
                 <thead>
-                    <tr className = "text-[11px] text-slate-600 uppercase tracking-wider border-b border-white/[0.06]">
+                    <tr className = "text-[11px] text-slate-600 uppercase tracking-wider border-b border-line">
                         <th className = "text-left px-4 py-3 font-medium">Name</th>
                         <th className = "text-left px-4 py-3 font-medium">Email</th>
                         <th className = "text-left px-4 py-3 font-medium">Role</th>
@@ -39,14 +39,14 @@ export default function UserTable({ users, onEdit, onDeactivate }) {
                         const initials = user.name.split(' ').map(n => n[0]).join('').toUpperCase();
 
                         return (
-                            <tr key = {user._id} className = "border-b border-white/[0.04] hover:bg-white/[0.02] transition">
+                            <tr key = {user._id} className = "border-b border-line-subtle hover:bg-slate-50 transition">
                                 <td className = "px-4 py-3">
                                     <div className = "flex items-center gap-2.5">
-                                        <div className="w-7 h-7 rounded-full bg-indigo-500/20 flex items-center justify-center text-[11px] font-medium text-indigo-400 shrink-0">
+                                        <div className="w-7 h-7 rounded-full bg-indigo-50 flex items-center justify-center text-[11px] font-medium text-indigo-600 shrink-0">
                                             {initials}
 
                                         </div>
-                                        <span className="text-slate-300 text-[13px] capitalize">{user.name.toLowerCase()}</span>
+                                        <span className="text-slate-700 text-[13px] capitalize">{user.name.toLowerCase()}</span>
 
                                     </div>
 
@@ -64,8 +64,8 @@ export default function UserTable({ users, onEdit, onDeactivate }) {
                                 <td className = "px-4 py-3">
                                     <span className = {`inline-flex px-2.5 py-0.5 rounded-full text-[11px] font-medium
                                         ${user.isActive 
-                                            ? 'bg-green-500/15 text-green-400'
-                                            : 'bg-red-500/15 text-red-400'
+                                            ? 'bg-green-50 text-green-700'
+                                            : 'bg-red-50 text-red-700'
                                         }`}>
                                             {user.isActive ? 'Active' : 'Inactive'}
 
@@ -77,7 +77,7 @@ export default function UserTable({ users, onEdit, onDeactivate }) {
                                     <div className="flex items-center gap-3">
                                         <button
                                             onClick = {() => onEdit(user)}
-                                            className = "text-slate-500 hover:text-indigo-400 transition"
+                                            className = "text-slate-500 hover:text-indigo-600 transition"
                                             title = "Edit User"
                                             >
                                                 <i className = "ti ti-edit" style={{ fontSize: 15}} aria-hidden = "true"></i>
@@ -86,7 +86,7 @@ export default function UserTable({ users, onEdit, onDeactivate }) {
                                         <button 
                                             onClick = {() => onDeactivate(user._id)}
                                             disabled = {!user.isActive}
-                                            className = "text-slate-500 hover:text-red-400 transition disabled:opacity-30 disabled:cursor-not-allowed"
+                                            className = "text-slate-500 hover:text-red-600 transition disabled:opacity-30 disabled:cursor-not-allowed"
                                             title = "Deactivate User"
                                         >
                                             <i className = "ti ti-user-off" style = {{ fontSize: 15}} aria-hidden = "true"></i>

@@ -12,7 +12,7 @@ function RecordsTable({ records, onView }) {
     <div className = "overflow-x-auto">
       <table className = "w-full text-sm">
         <thead>
-          <tr className = "text-[11px] text-slate-600 uppercase tracking-wider border-b border-white/[0.06]">
+          <tr className = "text-[11px] text-slate-600 uppercase tracking-wider border-b border-line">
             <th className = "text-left px-4 py-3 font-medium">School name</th>
             <th className = "text-left px-4 py-3 font-medium">School code</th>
             <th className = "text-left px-4 py-3 font-medium">Year</th>
@@ -27,9 +27,9 @@ function RecordsTable({ records, onView }) {
           {records.map(record => (
             <tr 
             key = {record._id}
-            className = "border-b border-white/[0.04] hover:bg-white/[0.02] transition"
+            className = "border-b border-line-subtle hover:bg-slate-50 transition"
             >
-              <td className = "px-4 py-3 text-slate-300  text-[13px]">
+              <td className = "px-4 py-3 text-slate-700  text-[13px]">
                   {record.nameOfSchool}
               </td>
 
@@ -43,7 +43,7 @@ function RecordsTable({ records, onView }) {
 
               <td className = "px-4 py-3">
                   {record.file? (
-                    <span className = "inline-flex items-center gap-1.5 text-teal-400 text-[12px]">
+                    <span className = "inline-flex items-center gap-1.5 text-teal-600 text-[12px]">
                       <i className = "ti ti-paperclip" style = {{fontSize: 13}} aria-hidden = "true"></i>
                       Attached
                     </span>
@@ -55,7 +55,7 @@ function RecordsTable({ records, onView }) {
               <td className = "px-4 py-3">
                 <button
                   onClick = {() => onView(record)}
-                  className = "text-slate-500 hover:text-teal-400 transition"
+                  className = "text-slate-500 hover:text-teal-600 transition"
                   title = "View record"
                 >
                   <i className = "ti ti-eye" style = {{fontSize:15}} aria-hidden = "true"></i>

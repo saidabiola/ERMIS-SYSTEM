@@ -64,14 +64,14 @@ export default function AdminDashboard() {
         const activeUsers = users.filter(u => u.isActive).length;
 
         return (
-            <div className = "min-h-screen bg-slate-950 flex">
+            <div className = "min-h-screen bg-canvas flex">
                 <Sidebar user = {currentUser} />
 
                 <div className = "flex-1 p-6 overflow-y-auto">
 
                     {/* Header */}
                     <div className = "mb-6">
-                        <h1 className = "text-lg font-medium text-slate-100">
+                        <h1 className = "text-lg font-medium text-slate-900">
                             Good Morning, {currentUser?.name}
 
                         </h1>
@@ -92,9 +92,9 @@ export default function AdminDashboard() {
                     />
 
                     {/* User Table */}
-                    <div className = "bg-white/[0.03] border border-white/[0.07] rounded-xl overflow-hidden">
-                        <div className = "flex items-center justify-between px-5 py-4 border-b border-white/[0.06]">
-                            <h2 className = "text-[14px] font-medium text-slate-200">System Users</h2>
+                    <div className = "bg-surface border border-line shadow-panel rounded-xl overflow-hidden">
+                        <div className = "flex items-center justify-between px-5 py-4 border-b border-line">
+                            <h2 className = "text-[14px] font-medium text-slate-800">System Users</h2>
 
                             <button
                                 onClick = {() => setShowAddUserModal(true)}
@@ -108,7 +108,7 @@ export default function AdminDashboard() {
                         </div>
 
                         {error && (
-                            <p className = "text-red-400 text-sm text-center py-4">{error}</p>
+                            <p className = "text-red-600 text-sm text-center py-4">{error}</p>
                         )}
 
                         {loading ? (

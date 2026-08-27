@@ -1,41 +1,66 @@
+import { useEffect, useState } from "react";
 import { Navigate } from "react-router-dom";
+import {
+  getAccessToken,
+  clearAccessToken,
+  refreshAccessToken,
+  isAccessTokenExpired,
+  decodeAccessToken,
+} from "../../utils/auth";
 
 export default function ProtectedRoute({ children, allowedRoles }) {
-    
-    //get token from local storage
-    const token = localStorage.getItem('token');
+  const [status, setStatus] = useState("checking"); // checking | ok | deny | unauthorized
 
-    //if no token at all (not logged in), send to login page
-    
-    if (!token) {
-        return <Navigate to = "/" replace />;
-    }
+  useEffect(() => {
+    let cancelled = false;
 
-    //decode the token payload (middle part) to read the role
+    async function ensureSession() {
+      try {
+        let token = getAccessToken();
 
-    try {
-        const payload = JSON.parse(atob(token.split('.')[1]));
-
-        //check if token has expired
-        
-        const isExpired = payload.exp * 1000 < new Date().getTime();
-        if (isExpired) {
-            localStorage.removeItem('token');
-            return <Navigate to = "/" replace />;
+        // No access token, or expired → try refresh cookie once
+        if (!token || isAccessTokenExpired(token)) {
+          token = await refreshAccessToken();
         }
 
-        //check if users role is allowed for this route
+        if (cancelled) return;
+
+        const payload = decodeAccessToken(token);
         if (allowedRoles && !allowedRoles.includes(payload.role)) {
-            return <Navigate to = "/unauthorized" replace />;
+          setStatus("unauthorized");
+          return;
         }
 
-        //all checks passed (render the page)
-        return children;
-
-    } catch (_) {
-        
-        //token is malformed/tampered - clear it and send to login
-        localStorage.removeItem('token');
-        return <Navigate to = "/" replace />;
+        setStatus("ok");
+      } catch {
+        if (!cancelled) {
+          clearAccessToken();
+          setStatus("deny");
+        }
+      }
     }
+
+    ensureSession();
+    return () => {
+      cancelled = true;
+    };
+  }, [allowedRoles]);
+
+  if (status === "checking") {
+    return (
+      <div className="min-h-screen flex items-center justify-center bg-slate-50 text-sm text-slate-500">
+        Checking session...
+      </div>
+    );
+  }
+
+  if (status === "deny") {
+    return <Navigate to="/" replace />;
+  }
+
+  if (status === "unauthorized") {
+    return <Navigate to="/unauthorized" replace />;
+  }
+
+  return children;
 }

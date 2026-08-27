@@ -1,4 +1,4 @@
-# ---- Stage 1: Build stage ----
+# ---- Build stage ----
 
 FROM node:20-alpine AS builder
 
@@ -16,7 +16,7 @@ COPY . .
 RUN npm run build
 
 
-# ----stage 2: Production stage ----
+# --- Production stage ---
 
 FROM nginx:alpine
 

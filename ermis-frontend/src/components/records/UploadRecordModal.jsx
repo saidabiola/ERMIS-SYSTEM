@@ -32,13 +32,13 @@ function UploadRecordModal({ onClose, onSubmit }) {
 };
 
 return (
-    <div className = "fixed inset-0 bg-black/60 flex items-center justify-center z-50 px-4">
-        <div className = "bg-slate-900 border border-white/10 rounded-2xl w-full mx-w-md p-6">
+    <div className = "fixed inset-0 bg-slate-900/40 flex items-center justify-center z-50 px-4">
+        <div className = "bg-surface shadow-modal border border-line rounded-2xl w-full mx-w-md p-6">
 
         <div className = "flex items-center justify-between mb-5">
-            <h3 className = "text-[15px] font-medium text-slate-200">Upload new record</h3>
+            <h3 className = "text-[15px] font-medium text-slate-800">Upload new record</h3>
             <button
-                onClick = {onClose} className = "text-slate-500 hover:text-slate-300 transition"
+                onClick = {onClose} className = "text-slate-500 hover:text-slate-700 transition"
             >
                 <i className = "ti ti-x" style = {{fontSize: 18}} aria-hidden = "true"></i>
 
@@ -56,7 +56,7 @@ return (
                 value = {form.nameOfSchool}
                 onChange = {e => setForm({ ...form, nameOfSchool: e.target.value })}
                 required
-                className = "w-full bg-white/[0.06] border border-white/10 rounded-lg px-3 h-10 text-sm text-slate-200 placeholder:text-slate-600 outline-none focus:border-teal-500/60 focus:ring-1 focus-ring-teal-500/30 transition"
+                className = "w-full bg-muted border border-line rounded-lg px-3 h-10 text-sm text-slate-800 placeholder:text-slate-400 outline-none focus:border-teal-500/60 focus:ring-1 focus-ring-teal-500/30 transition"
                 
                 />
             </div>
@@ -69,7 +69,7 @@ return (
                 value = {form.schoolCode}
                 onChange = {e => setForm({ ...form, schoolCode: e.target.value })}
                 required
-                className = "w-full bg-white/[0.06] border border-white/10 rounded-lg px-3 h-10 text-sm text-slate-200 placeholder:text-slate-600 outline-none focus:border-teal-500/60 focus:ring-teal-500/30 transition"
+                className = "w-full bg-muted border border-line rounded-lg px-3 h-10 text-sm text-slate-800 placeholder:text-slate-400 outline-none focus:border-teal-500/60 focus:ring-teal-500/30 transition"
                 />
             </div>
 
@@ -84,7 +84,7 @@ return (
                 value = {form.yearOfGraduation}
                 onChange = {e => setForm({ ...form, yearOfGraduation: e.target.value })}
                 required
-                className = "w-full bg-white/[0.06] border border-white/10 rounded-lg px-3 h-10 text-sm text-slate-200 placeholder:text-slate-600 outline-none focus:border-teal-500/60 focus:ring-1 focus:ring-teal-500/30 transition"
+                className = "w-full bg-muted border border-line rounded-lg px-3 h-10 text-sm text-slate-800 placeholder:text-slate-400 outline-none focus:border-teal-500/60 focus:ring-1 focus:ring-teal-500/30 transition"
                 />
             </div>
 
@@ -98,27 +98,27 @@ return (
                     type="file"
                     accept = ".pdf, .doc, .jpg, .png"
                     onChange = {e => setFile(e.target.files[0])}
-                    className = "w-full bg-white/[0.06] border border-white/10 rounded-lg px-3 py-2 text-sm text-slate-400 file:mr-3 file:py-1 file:px-3 file:rounded-md file:border-0 file:bg-teal-500/20 file:text-teal-400 file:text-xs file:cursor-pointer cursor-pointer outline-none"
+                    className = "w-full bg-muted border border-line rounded-lg px-3 py-2 text-sm text-slate-400 file:mr-3 file:py-1 file:px-3 file:rounded-md file:border-0 file:bg-teal-50 file:text-teal-700 file:text-xs file:cursor-pointer cursor-pointer outline-none"
                      />
 
                 </div>
 
                 {file && (
-                    <p className = "text-[11px] text-indigo-400 mt-1">
+                    <p className = "text-[11px] text-indigo-600 mt-1">
                         selected: {file.name}
                     </p>
                 )}
             </div>
 
             {error && (
-                <p className = "text-red-400 text-xs text-center">{error}</p>
+                <p className = "text-red-600 text-xs text-center">{error}</p>
             )}
 
             <div className = "flex gap-3 pt-1">
                 <button
                     type = "button"
                     onClick = {onClose}
-                    className = "flex-1 h-10 border border-white/10 rounded-lg text-sm text-slate-400 hover:text-slate-200 hover:border-white/20 transition"
+                    className = "flex-1 h-10 border border-line rounded-lg text-sm text-slate-400 hover:text-slate-800 hover:border-slate-300 transition"
                 >
                     Cancel
                 </button>
