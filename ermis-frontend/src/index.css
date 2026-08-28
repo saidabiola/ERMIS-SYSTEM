@@ -15,6 +15,9 @@
   --ermis-ink: #0f172a;
   --ermis-ink-muted: #64748b;
   --ermis-accent: #4f46e5;
+  --ermis-brand-teal: #0d9488;
+  --ermis-brand-teal-light: #f0fdfa;
+  --ermis-brand-teal-muted: #ccfbf1;
 }
 
 @layer base {

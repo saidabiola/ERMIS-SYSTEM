@@ -82,7 +82,7 @@ function RecordsDashboard(){
           </div>
           <button
             onClick={() => setShowUploadModal(true)}
-            className="flex items-center gap-1.5 bg-indigo-600 hover:bg-indigo-500 text-white text-[13px] font-medium px-4 py-2 rounded-lg transition"
+            className="flex items-center gap-1.5 bg-teal-600 hover:bg-teal-500 text-white text-[13px] font-medium px-4 py-2 rounded-lg transition shadow-sm shadow-teal-700/20"
           >
             <i className="ti ti-upload" style={{fontSize: 14}} aria-hidden="true"></i>
             Upload record
@@ -91,19 +91,22 @@ function RecordsDashboard(){
 
         {/* Stats */}
         <div className="grid grid-cols-3 gap-3 mb-6">
-          <div className="bg-surface border border-line shadow-panel rounded-xl p-4">
-            <p className="text-[11px] text-slate-500 mb-1.5">Total records</p>
-            <p className="text-2xl font-medium text-slate-800">{records.length}</p>
+          <div className="bg-white border border-slate-200 shadow-panel rounded-xl p-4 border-l-4 border-l-teal-600">
+            <p className="text-[11px] font-medium text-slate-500 mb-1.5 uppercase tracking-wide">Total records</p>
+            <p className="text-2xl font-semibold text-slate-800">{records.length}</p>
           </div>
-          <div className="bg-surface border border-line shadow-panel rounded-xl p-4">
-            <p className="text-[11px] text-slate-500 mb-1.5">With attachments</p>
-            <p className="text-2xl font-medium text-teal-600">
+          <div
+            className="rounded-xl p-4 border shadow-panel"
+            style={{ backgroundColor: 'var(--ermis-brand-teal-light)', borderColor: '#99f6e4' }}
+          >
+            <p className="text-[11px] font-medium text-teal-700/80 mb-1.5 uppercase tracking-wide">With attachments</p>
+            <p className="text-2xl font-semibold text-teal-700">
               {records.filter(r => r.file).length}
             </p>
           </div>
-          <div className="bg-surface border border-line shadow-panel rounded-xl p-4">
-            <p className="text-[11px] text-slate-500 mb-1.5">Search results</p>
-            <p className="text-2xl font-medium text-indigo-600">
+          <div className="bg-slate-50 border border-slate-200 shadow-panel rounded-xl p-4">
+            <p className="text-[11px] font-medium text-slate-500 mb-1.5 uppercase tracking-wide">Search results</p>
+            <p className="text-2xl font-semibold text-slate-700">
               {search ? records.length : '—'}
             </p>
           </div>
