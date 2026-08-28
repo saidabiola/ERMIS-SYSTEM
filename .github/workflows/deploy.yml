@@ -25,4 +25,22 @@ jobs:
             git fetch origin main
             git reset --hard origin/main
             docker compose up -d --build
-           
+
+            # Wait for the backend stack to be ready
+            
+            echo "Waiting for /api/health..."
+
+            for i in $(seq 1 30); do
+              if curl -fsS http://127.0.0.1/api/health >/dev/null 2>&1; then
+                echo "Health check passed on attempt $i"
+                curl -fsS http://127.0.0.1/api/health
+                exit 0
+              fi
+              echo "Attempt $i/30 — not ready yet, retrying in 5s..."
+              sleep 5
+            done
+            echo "Health check failed after 30 attempts (~150s)"
+            docker compose ps
+            docker compose logs ermis-backend --tail=40
+            exit 1
+
