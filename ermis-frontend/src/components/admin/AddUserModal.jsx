@@ -51,7 +51,7 @@ export default function AddUserModal({ onClose, onSubmit }) {
                             value = {form.name}
                             onChange = {e => setForm({ ...form, name: e.target.value})}
                             required
-                            className = "w-full bg-muted border border-line rounded-lg px-3 h-10 text-sm text-slate-800 placeholder:text-slate-400 outline-none focus:border-indigo-500/60 focus:ring-indigo-500/30 transition"
+                            className = "w-full bg-muted border border-line rounded-lg px-3 h-10 text-sm text-slate-800 placeholder:text-slate-400 outline-none focus:border-teal-500/60 focus:ring-teal-500/30 transition"
                             />
                     </div>
 
@@ -65,7 +65,7 @@ export default function AddUserModal({ onClose, onSubmit }) {
                             value = {form.email}
                             onChange = {e => setForm({ ...form, email: e.target.value })}
                             required
-                            className = "w-full bg-muted border border-line rounded-lg px-3 h-10 text-sm text-slate-800 placeholder:text-slate-400 outline-none focus:border-indigo-500/60 focus:ring-indigo-500/30 transition"
+                            className = "w-full bg-muted border border-line rounded-lg px-3 h-10 text-sm text-slate-800 placeholder:text-slate-400 outline-none focus:border-teal-500/60 focus:ring-teal-500/30 transition"
                         />
                     </div>
 
@@ -75,7 +75,7 @@ export default function AddUserModal({ onClose, onSubmit }) {
                         <select
                             value = {form.role}
                             onChange = {e => setForm({ ...form, role: e.target.value })}
-                            className = "w-full bg-muted border border-line rounded-lg px-3 h-10 text-sm text-slate-800 outline-none focus:border-indigo-500/60 focus:ring-indigo-500/30 transition"
+                            className = "w-full bg-muted border border-line rounded-lg px-3 h-10 text-sm text-slate-800 outline-none focus:border-teal-500/60 focus:ring-teal-500/30 transition"
                             >
                                 {ROLES.map(r => (
                                     <option key = {r.value} value = {r.value}>{r.label}</option>
@@ -95,7 +95,7 @@ export default function AddUserModal({ onClose, onSubmit }) {
                             onChange = {e => setForm({ ...form, password: e.target.value})}
                             required
                             minLength = {8}
-                            className = "w-full bg-muted border border-line rounded-lg px-3 h-10 text-sm text-slate-800 placeholder:text-slate-400 outline-none focus:border-indigo-500/60 focus:ring-1 focus:ring-indigo-500/30 transition"
+                            className = "w-full bg-muted border border-line rounded-lg px-3 h-10 text-sm text-slate-800 placeholder:text-slate-400 outline-none focus:border-teal-500/60 focus:ring-1 focus:ring-teal-500/30 transition"
 
                         />
                         <p className = "text-[11px] text-slate-600 mt-1">
@@ -119,7 +119,7 @@ export default function AddUserModal({ onClose, onSubmit }) {
                         <button
                             type = "submit"
                             disabled = {loading}
-                            className = "flex-1 h-10  bg-indigo-600 hover:bg-indigo-500 disabled:opacity-60 rounded-lg text-sm font-medium text-white transition"
+                            className = "flex-1 h-10  bg-teal-600 hover:bg-teal-500 disabled:opacity-60 rounded-lg text-sm font-medium text-white transition"
 
                         >
                             {loading ? 'Creating...' : 'Create User'}

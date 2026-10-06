@@ -1,0 +1,152 @@
+import { useState } from 'react';
+import { useNavigate } from 'react-router-dom';
+import RecordsSidebar from '../../components/records/RecordsSidebar';
+import { api } from '../../utils/api';
+import { decodeAccessToken } from '../../utils/auth';
+
+/**
+ * Upload record page — sidebar link /dashboard/records/upload
+ * API: POST /api/records (multipart FormData)
+ */
+function UploadRecordPage() {
+  const navigate = useNavigate();
+  const [form, setForm] = useState({
+    nameOfSchool: '',
+    schoolCode: '',
+    yearOfGraduation: '',
+  });
+  const [file, setFile] = useState(null);
+  const [loading, setLoading] = useState(false);
+  const [error, setError] = useState('');
+  const [success, setSuccess] = useState(false);
+
+  const currentUser = decodeAccessToken();
+
+  const handleSubmit = async (e) => {
+    e.preventDefault();
+    setLoading(true);
+    setError('');
+    setSuccess(false);
+
+    try {
+      const formData = new FormData();
+      formData.append('nameOfSchool', form.nameOfSchool);
+      formData.append('schoolCode', form.schoolCode);
+      formData.append('yearOfGraduation', form.yearOfGraduation);
+      if (file) formData.append('file', file);
+
+      await api.post('/records', formData);
+
+      setSuccess(true);
+      setForm({ nameOfSchool: '', schoolCode: '', yearOfGraduation: '' });
+      setFile(null);
+
+      setTimeout(() => navigate('/dashboard/records/all'), 1200);
+    } catch (err) {
+      setError(err.message);
+    } finally {
+      setLoading(false);
+    }
+  };
+
+  return (
+    <div className="min-h-screen bg-canvas flex overflow-hidden">
+      <RecordsSidebar user={currentUser} />
+
+      <div className="flex-1 p-6 overflow-y-auto">
+        <div className="mb-6">
+          <h1 className="text-lg font-medium text-slate-900">Upload record</h1>
+          <p className="text-sm text-slate-500 mt-0.5">
+            Add a new school academic record to the system.
+          </p>
+        </div>
+
+        {/* Centered form card — same fields as the Overview modal */}
+        <div className="mx-auto w-full max-w-md rounded-2xl border border-line bg-surface p-6 shadow-panel">
+          <form onSubmit={handleSubmit} className="space-y-4">
+            <div>
+              <label className="mb-1.5 block text-xs text-slate-500">School name</label>
+              <input
+                type="text"
+                placeholder="Oriwo Boys High School"
+                value={form.nameOfSchool}
+                onChange={(e) => setForm({ ...form, nameOfSchool: e.target.value })}
+                required
+                className="h-10 w-full rounded-lg border border-line bg-muted px-3 text-sm text-slate-800 outline-none transition placeholder:text-slate-400 focus:border-teal-500/60 focus:ring-1 focus:ring-teal-500/30"
+              />
+            </div>
+
+            <div>
+              <label className="mb-1.5 block text-xs text-slate-500">School code</label>
+              <input
+                type="text"
+                placeholder="417103001"
+                value={form.schoolCode}
+                onChange={(e) => setForm({ ...form, schoolCode: e.target.value })}
+                required
+                className="h-10 w-full rounded-lg border border-line bg-muted px-3 text-sm text-slate-800 outline-none transition placeholder:text-slate-400 focus:border-teal-500/60 focus:ring-1 focus:ring-teal-500/30"
+              />
+            </div>
+
+            <div>
+              <label className="mb-1.5 block text-xs text-slate-500">Year of graduation</label>
+              <input
+                type="number"
+                placeholder="2007"
+                min="1990"
+                max="2099"
+                value={form.yearOfGraduation}
+                onChange={(e) => setForm({ ...form, yearOfGraduation: e.target.value })}
+                required
+                className="h-10 w-full rounded-lg border border-line bg-muted px-3 text-sm text-slate-800 outline-none transition placeholder:text-slate-400 focus:border-teal-500/60 focus:ring-1 focus:ring-teal-500/30"
+              />
+            </div>
+
+            <div>
+              <label className="mb-1.5 block text-xs text-slate-500">
+                Attach file <span className="text-slate-400">(optional)</span>
+              </label>
+              <input
+                type="file"
+                accept=".pdf,.doc,.docx,.jpg,.png"
+                onChange={(e) => setFile(e.target.files[0] || null)}
+                className="w-full cursor-pointer rounded-lg border border-line bg-muted px-3 py-2 text-sm text-slate-500 outline-none file:mr-3 file:cursor-pointer file:rounded-md file:border-0 file:bg-teal-50 file:px-3 file:py-1 file:text-xs file:text-teal-700"
+              />
+              {file && (
+                <p className="mt-1 text-[11px] text-teal-700">Selected: {file.name}</p>
+              )}
+            </div>
+
+            {error && (
+              <p className="text-center text-xs text-red-600">{error}</p>
+            )}
+            {success && (
+              <p className="text-center text-xs text-teal-700">
+                Record uploaded. Opening all records…
+              </p>
+            )}
+
+            <div className="flex gap-3 pt-1">
+              <button
+                type="button"
+                onClick={() => navigate('/dashboard/records')}
+                className="h-10 flex-1 rounded-lg border border-line text-sm text-slate-500 transition hover:border-slate-300 hover:text-slate-800"
+              >
+                Cancel
+              </button>
+              <button
+                type="submit"
+                disabled={loading || success}
+                className="h-10 flex-1 rounded-lg bg-teal-600 text-sm font-medium text-white transition hover:bg-teal-500 disabled:opacity-60"
+              >
+                {loading ? 'Uploading...' : 'Upload record'}
+              </button>
+            </div>
+          </form>
+        </div>
+      </div>
+    </div>
+  );
+}
+
+export default UploadRecordPage;

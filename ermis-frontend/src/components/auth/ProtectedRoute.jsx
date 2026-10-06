@@ -18,7 +18,7 @@ export default function ProtectedRoute({ children, allowedRoles }) {
       try {
         let token = getAccessToken();
 
-        // No access token, or expired → try refresh cookie once
+        // No access token, or expired (try refresh cookie once)
         if (!token || isAccessTokenExpired(token)) {
           token = await refreshAccessToken();
         }

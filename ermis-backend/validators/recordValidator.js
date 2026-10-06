@@ -3,4 +3,12 @@ function validateCreateRecordBody(body) {
   return { nameOfSchool, schoolCode, yearOfGraduation };
 }
 
-module.exports = { validateCreateRecordBody };
+function validateUpdateRecordBody(body) {
+  const { nameOfSchool, schoolCode, yearOfGraduation } = body || {};
+  return { nameOfSchool, schoolCode, yearOfGraduation };
+}
+
+module.exports = {
+  validateCreateRecordBody,
+  validateUpdateRecordBody,
+};

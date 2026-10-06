@@ -11,6 +11,9 @@ build/
 # Uploads folder
 uploads/
 
+# ICT JSON backups (created at runtime)
+ermis-backend/backups/
+
 # Logs
 npm-debug.log*
 yarn-debug.log*

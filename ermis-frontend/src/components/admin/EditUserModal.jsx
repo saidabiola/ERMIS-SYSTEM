@@ -54,7 +54,7 @@ export default function EditUserModal({ user, onClose, onSubmit }){
                             value = {form.name}
                             onChange = {e => setForm({ ...form, name : e.target.value })}
                             required
-                            className = "w-full bg-muted border border-line rounded-lg px-3 h-10 text-sm text-slate-800 placeholder:text-slate-400 outline-none focus:border-indigo-500/60 focus:ring-1 focus:ring-indigo-500/30 transition"
+                            className = "w-full bg-muted border border-line rounded-lg px-3 h-10 text-sm text-slate-800 placeholder:text-slate-400 outline-none focus:border-teal-500/60 focus:ring-1 focus:ring-teal-500/30 transition"
                         />
                     </div>
 
@@ -65,7 +65,7 @@ export default function EditUserModal({ user, onClose, onSubmit }){
                             type = "email"
                             value = {form.email}
                             onChange = {e => setForm({ ...form, email : e.target.value})}
-                            className = "w-full bg-muted border border-line rounded-lg px-3 h-10 text-sm text-slate-800 placeholder:text-slate-400 outline-none focus:border-indigo-500/60 focus:ring-1 focus:ring-indigo-500/30 transition"
+                            className = "w-full bg-muted border border-line rounded-lg px-3 h-10 text-sm text-slate-800 placeholder:text-slate-400 outline-none focus:border-teal-500/60 focus:ring-1 focus:ring-teal-500/30 transition"
                         />
                     </div>
 
@@ -75,7 +75,7 @@ export default function EditUserModal({ user, onClose, onSubmit }){
                         <select
                             value = {form.role}
                             onChange = {e => setForm({ ...form, role : e.target.value })}
-                            className = "w-full bg-muted border border-line rounded-lg px-3 h-10 text-sm text-slate-800 outline-none focus:border-indigo-500/60 transition"
+                            className = "w-full bg-muted border border-line rounded-lg px-3 h-10 text-sm text-slate-800 outline-none focus:border-teal-500/60 transition"
                         >
                             {ROLES.map(role => (
                                 <option key = {role.value} value = {role.value}>{role.label}</option>
@@ -90,7 +90,7 @@ export default function EditUserModal({ user, onClose, onSubmit }){
                         <select
                             value = {form.isActive.toString()}
                             onChange = {e => setForm({ ...form, isActive: e.target.value === 'true' })}
-                            className = "w-full bg-muted border border-line rounded-lg px-3 h-10 text-sm text-slate-800 outline-none focus:border-indigo-500/60 transition"
+                            className = "w-full bg-muted border border-line rounded-lg px-3 h-10 text-sm text-slate-800 outline-none focus:border-teal-500/60 transition"
                         >
                             <option value = "true">Active</option>
                             <option value = "false">Inactive</option>
@@ -115,7 +115,7 @@ export default function EditUserModal({ user, onClose, onSubmit }){
                         <button 
                             type = "submit"
                             disabled = {loading}
-                            className = "flex-1 h-10 bg-indigo-600 hover:bg-indigo-500 disabled:opacity-60 rounded-lg text-sm font-medium text-white transition"
+                            className = "flex-1 h-10 bg-teal-600 hover:bg-teal-500 disabled:opacity-60 rounded-lg text-sm font-medium text-white transition"
                         >
                             {loading ? 'Saving...' : 'Save Changes'}
 

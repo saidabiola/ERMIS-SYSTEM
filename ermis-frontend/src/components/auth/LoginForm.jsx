@@ -37,7 +37,7 @@ export default function LoginForm({ embedded = false }) {
       }
 
       if (!data.accessToken || !data.role) {
-        setError('Login response was incomplete. Please try again.');
+        setError('something unknown happened. Please try again.');
         return;
       }
 

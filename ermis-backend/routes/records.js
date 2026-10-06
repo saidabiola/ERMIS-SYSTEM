@@ -15,6 +15,21 @@ router.post(
   upload.single("file"),
   recordController.createRecord
 );
+// Authenticated download — must be before /:id if we ever conflict; here path is distinct
+router.get("/:id/file", recordController.downloadFile);
 router.get("/:id", recordController.getRecord);
+
+// Officers (and admin) can correct or remove records — supervisors stay read-only
+router.put(
+  "/:id",
+  restrictTo("records_officer", "admin"),
+  upload.single("file"),
+  recordController.updateRecord
+);
+router.delete(
+  "/:id",
+  restrictTo("records_officer", "admin"),
+  recordController.deleteRecord
+);
 
 module.exports = router;

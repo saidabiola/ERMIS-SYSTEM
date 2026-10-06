@@ -15,128 +15,124 @@ function UploadRecordModal({ onClose, onSubmit }) {
         e.preventDefault();
         setLoading(true);
         setError('');
-    
 
-    try {
-        const formData = new FormData();
-        formData.append('nameOfSchool', form.nameOfSchool);
-        formData.append('schoolCode', form.schoolCode);
-        formData.append('yearOfGraduation', form.yearOfGraduation);
-        if (file) formData.append('file', file);
+        try {
+            const formData = new FormData();
+            formData.append('nameOfSchool', form.nameOfSchool);
+            formData.append('schoolCode', form.schoolCode);
+            formData.append('yearOfGraduation', form.yearOfGraduation);
+            if (file) formData.append('file', file);
 
-        await onSubmit(formData);
-        onClose();
-    } catch (err) {
-        setError(err.message);
-    } setLoading(false);
-};
+            await onSubmit(formData);
+            onClose();
+        } catch (err) {
+            setError(err.message);
+        } finally {
+            setLoading(false);
+        }
+    };
 
-return (
-    <div className = "fixed inset-0 bg-slate-900/40 flex items-center justify-center z-50 px-4">
-        <div className = "bg-surface shadow-modal border border-line rounded-2xl w-full mx-w-md p-6">
-
-        <div className = "flex items-center justify-between mb-5">
-            <h3 className = "text-[15px] font-medium text-slate-800">Upload new record</h3>
-            <button
-                onClick = {onClose} className = "text-slate-500 hover:text-slate-700 transition"
+    return (
+        // click outside is not required; X / Cancel closes the upload modal
+        <div className="fixed inset-0 z-50 flex items-center justify-center bg-slate-900/50 px-4 py-6">
+           
+            <div
+                className="w-full max-w-md rounded-2xl border border-line bg-surface p-6 shadow-modal"
+                role="dialog"
+                aria-modal="true"
+                aria-labelledby="upload-record-title"
             >
-                <i className = "ti ti-x" style = {{fontSize: 18}} aria-hidden = "true"></i>
-
-            </button>
-
-        </div>
-
-        <form onSubmit = {handleSubmit} className = "space-y-4">
-
-            <div>
-                <label className = "block text-xs text-slate-400 mb-1.5">School name</label>
-                <input 
-                type = "text"
-                placeholder = "Oriwo Boys High School"
-                value = {form.nameOfSchool}
-                onChange = {e => setForm({ ...form, nameOfSchool: e.target.value })}
-                required
-                className = "w-full bg-muted border border-line rounded-lg px-3 h-10 text-sm text-slate-800 placeholder:text-slate-400 outline-none focus:border-teal-500/60 focus:ring-1 focus-ring-teal-500/30 transition"
-                
-                />
-            </div>
-
-            <div>
-                <label className = "block text-xs text-slate-400 mb-1.5">School code</label>
-                <input 
-                type="text"
-                placeholder = "417103001"
-                value = {form.schoolCode}
-                onChange = {e => setForm({ ...form, schoolCode: e.target.value })}
-                required
-                className = "w-full bg-muted border border-line rounded-lg px-3 h-10 text-sm text-slate-800 placeholder:text-slate-400 outline-none focus:border-teal-500/60 focus:ring-teal-500/30 transition"
-                />
-            </div>
-
-            <div>
-                <label className = "block text-xs text-slate-400 mb-1.5">Year of Graduation</label>
-                <input 
-                type = "text"
-                type = "number"
-                placeholder = "2007"
-                min = "1990"
-                max = "2099"
-                value = {form.yearOfGraduation}
-                onChange = {e => setForm({ ...form, yearOfGraduation: e.target.value })}
-                required
-                className = "w-full bg-muted border border-line rounded-lg px-3 h-10 text-sm text-slate-800 placeholder:text-slate-400 outline-none focus:border-teal-500/60 focus:ring-1 focus:ring-teal-500/30 transition"
-                />
-            </div>
-
-            <div>
-                <label className = "block text-xs text-slate-400 mb-1.5">
-                    Attach file <span className = "text-slate-600">(optional)</span>
-                </label>
-
-                <div className = "relative">
-                    <input 
-                    type="file"
-                    accept = ".pdf, .doc, .jpg, .png"
-                    onChange = {e => setFile(e.target.files[0])}
-                    className = "w-full bg-muted border border-line rounded-lg px-3 py-2 text-sm text-slate-400 file:mr-3 file:py-1 file:px-3 file:rounded-md file:border-0 file:bg-teal-50 file:text-teal-700 file:text-xs file:cursor-pointer cursor-pointer outline-none"
-                     />
-
+                <div className="mb-5 flex items-center justify-between">
+                    <h3 id="upload-record-title" className="text-[15px] font-medium text-slate-800">
+                        Upload new record
+                    </h3>
+                    <button
+                        type="button"
+                        onClick={onClose}
+                        className="text-slate-500 transition hover:text-slate-700"
+                    >
+                        <i className="ti ti-x" style={{ fontSize: 18 }} aria-hidden="true"></i>
+                    </button>
                 </div>
 
-                {file && (
-                    <p className = "text-[11px] text-indigo-600 mt-1">
-                        selected: {file.name}
-                    </p>
-                )}
+                <form onSubmit={handleSubmit} className="space-y-4">
+                    <div>
+                        <label className="mb-1.5 block text-xs text-slate-500">School name</label>
+                        <input
+                            type="text"
+                            placeholder="Oriwo Boys High School"
+                            value={form.nameOfSchool}
+                            onChange={(e) => setForm({ ...form, nameOfSchool: e.target.value })}
+                            required
+                            className="h-10 w-full rounded-lg border border-line bg-muted px-3 text-sm text-slate-800 outline-none transition placeholder:text-slate-400 focus:border-teal-500/60 focus:ring-1 focus:ring-teal-500/30"
+                        />
+                    </div>
+
+                    <div>
+                        <label className="mb-1.5 block text-xs text-slate-500">School code</label>
+                        <input
+                            type="text"
+                            placeholder="417103001"
+                            value={form.schoolCode}
+                            onChange={(e) => setForm({ ...form, schoolCode: e.target.value })}
+                            required
+                            className="h-10 w-full rounded-lg border border-line bg-muted px-3 text-sm text-slate-800 outline-none transition placeholder:text-slate-400 focus:border-teal-500/60 focus:ring-1 focus:ring-teal-500/30"
+                        />
+                    </div>
+
+                    <div>
+                        <label className="mb-1.5 block text-xs text-slate-500">Year of graduation</label>
+                        <input
+                            type="number"
+                            placeholder="2007"
+                            min="1990"
+                            max="2099"
+                            value={form.yearOfGraduation}
+                            onChange={(e) => setForm({ ...form, yearOfGraduation: e.target.value })}
+                            required
+                            className="h-10 w-full rounded-lg border border-line bg-muted px-3 text-sm text-slate-800 outline-none transition placeholder:text-slate-400 focus:border-teal-500/60 focus:ring-1 focus:ring-teal-500/30"
+                        />
+                    </div>
+
+                    <div>
+                        <label className="mb-1.5 block text-xs text-slate-500">
+                            Attach file <span className="text-slate-400">(optional)</span>
+                        </label>
+                        <input
+                            type="file"
+                            accept=".pdf,.doc,.docx,.jpg,.png"
+                            onChange={(e) => setFile(e.target.files[0])}
+                            className="w-full cursor-pointer rounded-lg border border-line bg-muted px-3 py-2 text-sm text-slate-500 outline-none file:mr-3 file:cursor-pointer file:rounded-md file:border-0 file:bg-teal-50 file:px-3 file:py-1 file:text-xs file:text-teal-700"
+                        />
+                        {file && (
+                            <p className="mt-1 text-[11px] text-teal-700">Selected: {file.name}</p>
+                        )}
+                    </div>
+
+                    {error && (
+                        <p className="text-center text-xs text-red-600">{error}</p>
+                    )}
+
+                    <div className="flex gap-3 pt-1">
+                        <button
+                            type="button"
+                            onClick={onClose}
+                            className="h-10 flex-1 rounded-lg border border-line text-sm text-slate-500 transition hover:border-slate-300 hover:text-slate-800"
+                        >
+                            Cancel
+                        </button>
+                        <button
+                            type="submit"
+                            disabled={loading}
+                            className="h-10 flex-1 rounded-lg bg-teal-600 text-sm font-medium text-white transition hover:bg-teal-500 disabled:opacity-60"
+                        >
+                            {loading ? 'Uploading...' : 'Upload record'}
+                        </button>
+                    </div>
+                </form>
             </div>
-
-            {error && (
-                <p className = "text-red-600 text-xs text-center">{error}</p>
-            )}
-
-            <div className = "flex gap-3 pt-1">
-                <button
-                    type = "button"
-                    onClick = {onClose}
-                    className = "flex-1 h-10 border border-line rounded-lg text-sm text-slate-400 hover:text-slate-800 hover:border-slate-300 transition"
-                >
-                    Cancel
-                </button>
-
-                <button
-                    type = "submit"
-                    disabled = {loading}
-                    className = "flex-1 h-10 bg-indigo-600 hover:bg-indigo-500 disabled:opacity-60 rounded-lg text-sm font-medium text-white transition"
-                >
-                    {loading ? 'Uploading...' : 'Upload record'}
-                </button>
-
-            </div>
-        </form>
-
         </div>
-
-    </div>
-)
+    );
 }
+
 export default UploadRecordModal;

@@ -2,39 +2,48 @@ import { useState, useEffect } from 'react'
 import RecordsSidebar from '../../components/records/RecordsSidebar';
 import RecordsTable from '../../components/records/RecordsTable';
 import UploadRecordModal from '../../components/records/UploadRecordModal';
+import EditRecordModal from '../../components/records/EditRecordModal';
+import RecordFileLink from '../../components/records/RecordFileLink';
+import { api } from '../../utils/api';
+import { decodeAccessToken } from '../../utils/auth';
+
+const PAGE_SIZE = 10;
 
 function RecordsDashboard(){
     const [records, setRecords] = useState([]);
     const [loading, setLoading] = useState(true);
     const [search, setSearch] = useState('');
+    const [page, setPage] = useState(1);
+    const [total, setTotal] = useState(0);
+    const [totalPages, setTotalPages] = useState(1);
     const [showUploadModal, setShowUploadModal] = useState(false);
     const [viewingRecord, setViewingRecord] = useState(null);
+    const [editingRecord, setEditingRecord] = useState(null);
     const [error, setError] = useState('');
 
-    //read logged in user from the token
-    const token = localStorage.getItem('token');
-    const currentUser = token ?
-        JSON.parse(atob(token.split('.')[1]))
-        : null;
+    const currentUser = decodeAccessToken();
 
+    // Re-fetch whenever page or search changes
     useEffect(() => {
-      
-        fetchRecords();
-    }, []);
+        fetchRecords(search, page);
+    }, [page, search]);
 
-    const fetchRecords = async (searchTerm = '') => {
+    const fetchRecords = async (searchTerm = '', pageNum = 1) => {
         try {
             setLoading(true);
-            const query = searchTerm ? `?search=${searchTerm}` : '';
-            const res = await fetch(`/api/records${query}`, {
-                headers: {
-                    'Authorization': `Bearer ${token}`
-                }
-            });
+            setError('');
 
-            const data = await res.json();
-            if (!res.ok) throw new Error(data.message);
-            setRecords(data);
+            const params = new URLSearchParams();
+            params.set('page', String(pageNum));
+            params.set('limit', String(PAGE_SIZE));
+            if (searchTerm) params.set('search', searchTerm);
+
+            // api.get → /api/records?... (+ Bearer + refresh on 401)
+            const data = await api.get(`/records?${params.toString()}`);
+
+            setRecords(data.records || []);
+            setTotal(data.total ?? 0);
+            setTotalPages(data.totalPages ?? 1);
         } catch (err) {
             setError(err.message);
         } finally {
@@ -45,21 +54,32 @@ function RecordsDashboard(){
     const handleSearch = (e) => {
         const value = e.target.value;
         setSearch(value);
-        fetchRecords(value);
+        setPage(1);
     };
 
     const handleUpload = async (formData) => {
-        const res = await fetch('/api/records', {
-            method: 'POST',
-            headers: {
-                'Authorization': `Bearer ${token}`
-            },
-            body: formData
-        });
+        await api.post('/records', formData);
+        setPage(1);
+        fetchRecords(search, 1);
+    };
 
-        const data = await res.json();
-        if (!res.ok) throw new Error(data.message);
-        fetchRecords();
+    const handleEdit = async (id, formData) => {
+        await api.put(`/records/${id}`, formData);
+        fetchRecords(search, page);
+    };
+
+    const handleDelete = async (record) => {
+        const ok = window.confirm(
+            `Delete record for "${record.nameOfSchool}" (${record.schoolCode})? This cannot be undone.`
+        );
+        if (!ok) return;
+
+        try {
+            await api.delete(`/records/${record._id}`);
+            fetchRecords(search, page);
+        } catch (err) {
+            setError(err.message);
+        }
     };
 
     return (
@@ -89,27 +109,57 @@ function RecordsDashboard(){
           </button>
         </div>
 
-        {/* Stats */}
+        {/* Stats — total comes from API (all matching rows), not just this page */}
         <div className="grid grid-cols-3 gap-3 mb-6">
-          <div className="bg-white border border-slate-200 shadow-panel rounded-xl p-4 border-l-4 border-l-teal-600">
-            <p className="text-[11px] font-medium text-slate-500 mb-1.5 uppercase tracking-wide">Total records</p>
-            <p className="text-2xl font-semibold text-slate-800">{records.length}</p>
-          </div>
-          <div
-            className="rounded-xl p-4 border shadow-panel"
-            style={{ backgroundColor: 'var(--ermis-brand-teal-light)', borderColor: '#99f6e4' }}
-          >
-            <p className="text-[11px] font-medium text-teal-700/80 mb-1.5 uppercase tracking-wide">With attachments</p>
-            <p className="text-2xl font-semibold text-teal-700">
-              {records.filter(r => r.file).length}
-            </p>
-          </div>
-          <div className="bg-slate-50 border border-slate-200 shadow-panel rounded-xl p-4">
-            <p className="text-[11px] font-medium text-slate-500 mb-1.5 uppercase tracking-wide">Search results</p>
-            <p className="text-2xl font-semibold text-slate-700">
-              {search ? records.length : '—'}
-            </p>
-          </div>
+          {[
+            {
+              value: total,
+              label: 'Total Records',
+              sub: 'All matching records',
+              icon: 'ti-files',
+            },
+            {
+              value: records.filter(r => r.file).length,
+              label: 'With Attachments',
+              sub: 'On this page',
+              icon: 'ti-paperclip',
+            },
+            {
+              value: search ? total : '—',
+              label: 'Search Results',
+              sub: search ? 'Matching query' : 'No active search',
+              icon: 'ti-search',
+            },
+          ].map((stat) => (
+            <div
+              key={stat.label}
+              className="relative overflow-hidden rounded-xl px-5 py-4 min-h-[108px] shadow-sm"
+              style={{ backgroundColor: 'var(--ermis-brand-teal)' }}
+            >
+              {/* Diagonal sheen — same glossy cut as reference */}
+              <div
+                className="pointer-events-none absolute inset-0"
+                style={{
+                  background:
+                    'linear-gradient(115deg, transparent 48%, rgba(255,255,255,0.14) 48%, rgba(255,255,255,0.22) 62%, transparent 62%)',
+                }}
+              />
+              <div className="relative z-10 flex items-start justify-between gap-3">
+                <div>
+                  <p className="text-3xl font-bold text-white leading-none tracking-tight">
+                    {stat.value}
+                  </p>
+                  <p className="mt-2 text-[14px] font-medium text-white">{stat.label}</p>
+                  <p className="mt-0.5 text-[12px] text-white/70">{stat.sub}</p>
+                </div>
+                <i
+                  className={`ti ${stat.icon} text-white/90 shrink-0 mt-0.5`}
+                  style={{ fontSize: 20 }}
+                  aria-hidden="true"
+                ></i>
+              </div>
+            </div>
+          ))}
         </div>
 
         {/* Search bar */}
@@ -124,7 +174,7 @@ function RecordsDashboard(){
           />
           {search && (
             <button
-              onClick={() => { setSearch(''); fetchRecords(); }}
+              onClick={() => { setSearch(''); setPage(1); }}
               className="text-slate-500 hover:text-slate-700 transition"
             >
               <i className="ti ti-x" style={{fontSize: 14}} aria-hidden="true"></i>
@@ -134,10 +184,15 @@ function RecordsDashboard(){
 
         {/* Records table */}
         <div className="bg-surface border border-line shadow-panel rounded-xl overflow-hidden">
-          <div className="px-5 py-4 border-b border-line">
+          <div className="px-5 py-4 border-b border-line flex items-center justify-between gap-3">
             <h2 className="text-[14px] font-medium text-slate-800">
               {search ? `Results for "${search}"` : 'All records'}
             </h2>
+            <p className="text-[12px] text-slate-500 shrink-0">
+              {total === 0
+                ? 'No records'
+                : `Showing ${(page - 1) * PAGE_SIZE + 1}-${Math.min(page * PAGE_SIZE, total)} of ${total}`}
+            </p>
           </div>
 
           {error && (
@@ -150,7 +205,34 @@ function RecordsDashboard(){
             <RecordsTable
               records={records}
               onView={setViewingRecord}
+              onEdit={setEditingRecord}
+              onDelete={handleDelete}
             />
+          )}
+
+          {/* Pagination controls */}
+          {totalPages > 1 && (
+            <div className="flex items-center justify-between gap-3 px-5 py-3 border-t border-line">
+              <button
+                type="button"
+                disabled={page <= 1 || loading}
+                onClick={() => setPage((p) => Math.max(1, p - 1))}
+                className="h-9 px-3 rounded-lg border border-line text-[13px] text-slate-600 hover:bg-slate-50 disabled:opacity-40 disabled:cursor-not-allowed transition"
+              >
+                Previous
+              </button>
+              <p className="text-[13px] text-slate-600">
+                Page <span className="font-medium text-slate-800">{page}</span> of {totalPages}
+              </p>
+              <button
+                type="button"
+                disabled={page >= totalPages || loading}
+                onClick={() => setPage((p) => Math.min(totalPages, p + 1))}
+                className="h-9 px-3 rounded-lg border border-line text-[13px] text-slate-600 hover:bg-slate-50 disabled:opacity-40 disabled:cursor-not-allowed transition"
+              >
+                Next
+              </button>
+            </div>
           )}
         </div>
 
@@ -181,22 +263,10 @@ function RecordsDashboard(){
                   </div>
                 ))}
 
-                {/* File download */}
+                {/* File download — gated until supervisor approval */}
                 <div className="flex justify-between items-center py-2">
                   <span className="text-xs text-slate-500">Attachment</span>
-                  {viewingRecord.file ? (
-                    <a
-                      href={`/uploads/${viewingRecord.file}`}
-                      target="_blank"
-                      rel="noreferrer"
-                      className="flex items-center gap-1.5 text-teal-600 text-sm hover:text-teal-700 transition"
-                    >
-                      <i className="ti ti-download" style={{fontSize: 14}} aria-hidden="true"></i>
-                      Download file
-                    </a>
-                  ) : (
-                    <span className="text-slate-600 text-sm">No file attached</span>
-                  )}
+                  <RecordFileLink record={viewingRecord} />
                 </div>
               </div>
 
@@ -216,6 +286,14 @@ function RecordsDashboard(){
         <UploadRecordModal
           onClose={() => setShowUploadModal(false)}
           onSubmit={handleUpload}
+        />
+      )}
+
+      {editingRecord && (
+        <EditRecordModal
+          record={editingRecord}
+          onClose={() => setEditingRecord(null)}
+          onSubmit={handleEdit}
         />
       )}
 

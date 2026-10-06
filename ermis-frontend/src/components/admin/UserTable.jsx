@@ -42,7 +42,7 @@ export default function UserTable({ users, onEdit, onDeactivate }) {
                             <tr key = {user._id} className = "border-b border-line-subtle hover:bg-slate-50 transition">
                                 <td className = "px-4 py-3">
                                     <div className = "flex items-center gap-2.5">
-                                        <div className="w-7 h-7 rounded-full bg-indigo-50 flex items-center justify-center text-[11px] font-medium text-indigo-600 shrink-0">
+                                        <div className="w-7 h-7 rounded-full bg-teal-50 flex items-center justify-center text-[11px] font-medium text-teal-600 shrink-0">
                                             {initials}
 
                                         </div>
@@ -77,7 +77,7 @@ export default function UserTable({ users, onEdit, onDeactivate }) {
                                     <div className="flex items-center gap-3">
                                         <button
                                             onClick = {() => onEdit(user)}
-                                            className = "text-slate-500 hover:text-indigo-600 transition"
+                                            className = "text-slate-500 hover:text-teal-600 transition"
                                             title = "Edit User"
                                             >
                                                 <i className = "ti ti-edit" style={{ fontSize: 15}} aria-hidden = "true"></i>

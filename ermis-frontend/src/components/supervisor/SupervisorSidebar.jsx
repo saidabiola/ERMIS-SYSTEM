@@ -1,104 +1,96 @@
-import { useNavigate, useLocation } from "react-router-dom";
-import {
-    IconLayoutDashboard,
-    IconClipboardCheck,
-    IconHistory,
-    IconFiles,
-    IconSchool,
-    IconLogout,
-} from "@tabler/icons-react";
-import { logout } from "../../utils/auth";
+import { useNavigate, useLocation } from 'react-router-dom';
+import { logout } from '../../utils/auth';
 
-function SupervisorSidebar({ user }) {
-    const navigate = useNavigate();
-    const location = useLocation();
+export default function SupervisorSidebar({ user }) {
+  const navigate = useNavigate();
+  const location = useLocation();
 
-    const handleLogout = async () => {
-        await logout();
-        navigate('/');
-    };
+  const handleLogout = async () => {
+    await logout();
+    navigate('/');
+  };
 
-    const navItems = [
-        { label: 'Overview', icon: IconLayoutDashboard, path: '/dashboard/supervisor' },
-        { label: 'Pending approvals', icon: IconClipboardCheck, path: '/dashboard/supervisor/approvals' },
-        { label: 'Audit logs', icon: IconHistory, path: '/dashboard/supervisor/audit' },
-        { label: 'View records', icon: IconFiles, path: '/dashboard/supervisor/records' },
-    ];
+  const navItems = [
+    { label: 'Overview', icon: 'ti-layout-dashboard', path: '/dashboard/supervisor' },
+    { label: 'Pending approvals', icon: 'ti-clipboard-check', path: '/dashboard/supervisor/approvals' },
+    { label: 'View records', icon: 'ti-files', path: '/dashboard/supervisor/records' },
+    { label: 'Audit trail', icon: 'ti-file-analytics', path: '/dashboard/supervisor/audit' },
+  ];
 
-    const initials = user?.name
-        ?.split(' ')
-        .map(n => n[0])
-        .join('')
-        .toUpperCase() || 'SV';
+  const isActive = (path) => {
+    if (path === '/dashboard/supervisor') {
+      return location.pathname === path;
+    }
+    return location.pathname === path || location.pathname.startsWith(`${path}/`);
+  };
 
-        return (
-            <div className = "w-56 min-h-screen bg-surface border-r border-line flex flex-col px-3 py-5 shrink-0">
+  const initials =
+    user?.name
+      ?.split(' ')
+      .map((n) => n[0])
+      .join('')
+      .toUpperCase() || 'SV';
 
-                {/* Logo */}
-                <div className = "flex items-center gap-2.5 px-2 mb-6">
-                    <div className = "w-8 h-8 rounded-lg bg-amber-50 border border-amber-200 flex items-center justify-center">
-                        <IconSchool size = {16} className = "text-amber-600" />
-                    </div>
+  return (
+    <div
+      className="relative w-56 min-h-screen flex flex-col px-3 py-5 shrink-0 overflow-hidden border-r border-teal-800/30"
+      style={{ backgroundColor: 'var(--ermis-brand-teal)' }}
+    >
+      <div className="absolute inset-0 pointer-events-none bg-[radial-gradient(ellipse_at_30%_15%,rgba(255,255,255,0.18),transparent_55%)]" />
+      <div className="absolute inset-0 pointer-events-none bg-[radial-gradient(ellipse_at_80%_95%,rgba(13,148,136,0.4),transparent_50%)]" />
 
-                    <div>
-                        <p className = "text-sm font-medium text-slate-900">ExamTrack</p>
-                        <p className = "text-[11px] text-slate-600">Supervisor Portal</p>
-                    </div>
+      <div className="relative z-10 flex flex-col flex-1 min-h-0">
+        <div className="flex items-center gap-2.5 px-2 mb-6">
+          <div className="w-8 h-8 rounded-lg bg-white/20 border border-white/30 flex items-center justify-center">
+            <i className="ti ti-school text-white" style={{ fontSize: 16 }} aria-hidden="true" />
+          </div>
+          <div>
+            <p className="text-sm font-medium text-white">ExamTrack</p>
+            <p className="text-[11px] text-teal-50/85">Supervisor portal</p>
+          </div>
+        </div>
 
-                </div>
+        <p className="text-[10px] text-teal-100/70 uppercase tracking-widest px-3 mb-1.5">
+          Oversight
+        </p>
+        {navItems.map((item) => (
+          <button
+            key={item.path}
+            type="button"
+            onClick={() => navigate(item.path)}
+            className={`flex items-center gap-2.5 px-3 py-2 rounded-lg text-[13px] mb-0.5 w-full text-left transition
+              ${
+                isActive(item.path)
+                  ? 'bg-white/20 text-white font-medium'
+                  : 'text-teal-50/90 hover:bg-white/10 hover:text-white'
+              }`}
+          >
+            <i className={`ti ${item.icon}`} aria-hidden="true" />
+            {item.label}
+          </button>
+        ))}
 
-                {/* Nav */}
-                <p className = "text-[10px] text-slate-400 uppercase track-widest px-3 mb-1.5">Supervisor</p>
-
-                {navItems.map(item => {
-                    const Icon = item.icon
-                    return (
-                        <button
-                            key = {item.path}
-                            onClick = {() => navigate(item.path)}
-                            className = {`flex items-center gap-2.5 px-3 py-2 rounded-lg text-[13px] mb-0.5 w-full text-left transition
-                            ${location.pathname === item.path
-                            ? 'bg-amber-50 text-amber-700'
-                            : 'text-slate-400 hover:bg-muted hover:text-slate-800'
-                    }`}
-                        >
-                            <Icon size = {15} />
-                            {item.label}
-
-                        </button>
-                    );
-                })}
-
-                {/* Logout */}
-
-                <div className = "mt-auto pt-4 border-t border-line">
-                    <div className = "flex items-center gap-2.5 px-3 py-2 mb-1">
-                        <div className = "w-7 h-7 rounded-full bg-amber-50 flex items-center justify-center text-[11px] font-medium text-amber-600 shrink-0">
-                            {initials}
-
-                        </div>
-
-                        <div className = "overflow-hidden">
-                            <p className = "text-[12px] text-slate-700 truncate">{user?.name}</p>
-                            <p className = "text-[11px] text-slate-600 truncate">{user?.email}</p>
-
-                        </div>
-
-                    </div>
-
-                    <button
-                        onClick = {handleLogout}
-                        className = "flex items-center gap-2.5 px-3 py-2 rounded-lg text-[13px] w-full text-left  text-red-600  hover:bg-red-50"
-                    >
-                        <IconLogout size = {15} />
-                        Logout
-
-                    </button>
-
-                </div>
-
+        <div className="mt-auto pt-4 border-t border-white/15">
+          <div className="flex items-center gap-2.5 px-3 py-2 mb-1">
+            <div className="w-7 h-7 rounded-full bg-white/20 flex items-center justify-center text-[11px] font-medium text-white shrink-0">
+              {initials}
             </div>
-        )
-}
+            <div className="overflow-hidden">
+              <p className="text-[12px] text-white truncate">{user?.name}</p>
+              <p className="text-[11px] text-teal-50/75 truncate">{user?.email}</p>
+            </div>
+          </div>
 
-export default SupervisorSidebar;
+          <button
+            type="button"
+            onClick={handleLogout}
+            className="flex items-center gap-2.5 px-3 py-2 rounded-lg text-[13px] w-full text-left text-red-100 hover:bg-white/10 transition"
+          >
+            <i className="ti ti-logout" aria-hidden="true" />
+            Sign Out
+          </button>
+        </div>
+      </div>
+    </div>
+  );
+}
