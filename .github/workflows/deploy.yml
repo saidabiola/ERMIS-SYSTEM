@@ -31,9 +31,10 @@ jobs:
             echo "Waiting for /api/health..."
 
             for i in $(seq 1 30); do
-              if curl -fsS http://127.0.0.1/api/health >/dev/null 2>&1; then
+              # Hit backend directly (Caddy may redirect :80 → https)
+              if curl -fsS http://127.0.0.1:5000/api/health >/dev/null 2>&1; then
                 echo "Health check passed on attempt $i"
-                curl -fsS http://127.0.0.1/api/health
+                curl -fsS http://127.0.0.1:5000/api/health
                 exit 0
               fi
               echo "Attempt $i/30 — not ready yet, retrying in 5s..."
@@ -42,5 +43,6 @@ jobs:
             echo "Health check failed after 30 attempts (~150s)"
             docker compose ps
             docker compose logs ermis-backend --tail=40
+            docker compose logs ermis-caddy --tail=40
             exit 1
 

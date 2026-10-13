@@ -1,0 +1,14 @@
+# TLS termination for ExamTrack (Let's Encrypt via Caddy)
+# Grey-cloud DNS at Cloudflare must point here first.
+
+examtrack.co.ke, www.examtrack.co.ke {
+	encode gzip
+
+	# Forward real client IP + HTTPS scheme to nginx → Express (secure cookies)
+	reverse_proxy ermis-frontend:80 {
+		header_up X-Real-IP {remote_host}
+		header_up X-Forwarded-For {remote_host}
+		header_up X-Forwarded-Proto {scheme}
+		header_up Host {host}
+	}
+}

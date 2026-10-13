@@ -1,11 +1,12 @@
-version: '3.8'
+version: "3.8"
 
 services:
   ermis-backend:
     build: ./ermis-backend
     container_name: ermis-backend
+    # Bound to localhost only — public traffic goes through Caddy → frontend → /api
     ports:
-      - "5000:5000"
+      - "127.0.0.1:5000:5000"
     env_file:
       - ./ermis-backend/.env
     restart: always
@@ -15,10 +16,27 @@ services:
   ermis-frontend:
     build: ./ermis-frontend
     container_name: ermis-frontend
-    ports:
-      - "80:80"
+    # No host port — only reachable on the Docker network via Caddy
+    expose:
+      - "80"
     depends_on:
       - ermis-backend
+    restart: always
+    networks:
+      - ermis-network
+
+  caddy:
+    image: caddy:2-alpine
+    container_name: ermis-caddy
+    ports:
+      - "80:80"
+      - "443:443"
+    volumes:
+      - ./Caddyfile:/etc/caddy/Caddyfile:ro
+      - caddy_data:/data
+      - caddy_config:/config
+    depends_on:
+      - ermis-frontend
     restart: always
     networks:
       - ermis-network
@@ -26,3 +44,7 @@ services:
 networks:
   ermis-network:
     driver: bridge
+
+volumes:
+  caddy_data:
+  caddy_config:

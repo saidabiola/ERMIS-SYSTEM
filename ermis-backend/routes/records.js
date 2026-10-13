@@ -1,6 +1,6 @@
 const express = require("express");
 const { protect, restrictTo } = require("../middleware/authMiddleware");
-const { upload } = require("../config/multer");
+const { uploadSingle } = require("../config/multer");
 const recordController = require("../controllers/recordController");
 
 const router = express.Router();
@@ -12,7 +12,7 @@ router.get("/", recordController.listRecords);
 router.post(
   "/",
   restrictTo("records_officer", "admin"),
-  upload.single("file"),
+  uploadSingle("file"),
   recordController.createRecord
 );
 // Authenticated download — must be before /:id if we ever conflict; here path is distinct
@@ -23,7 +23,7 @@ router.get("/:id", recordController.getRecord);
 router.put(
   "/:id",
   restrictTo("records_officer", "admin"),
-  upload.single("file"),
+  uploadSingle("file"),
   recordController.updateRecord
 );
 router.delete(

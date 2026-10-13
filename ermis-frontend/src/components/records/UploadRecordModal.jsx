@@ -1,4 +1,5 @@
 import { useState } from "react";
+import { validateRecordFile } from "../../utils/recordUpload";
 
 function UploadRecordModal({ onClose, onSubmit }) {
     const [form, setForm] = useState({
@@ -17,6 +18,12 @@ function UploadRecordModal({ onClose, onSubmit }) {
         setError('');
 
         try {
+            const fileError = validateRecordFile(file);
+            if (fileError) {
+                setError(fileError);
+                return;
+            }
+
             const formData = new FormData();
             formData.append('nameOfSchool', form.nameOfSchool);
             formData.append('schoolCode', form.schoolCode);
@@ -30,6 +37,21 @@ function UploadRecordModal({ onClose, onSubmit }) {
         } finally {
             setLoading(false);
         }
+    };
+
+    const handleFileChange = (e) => {
+        const next = e.target.files?.[0] || null;
+        setError('');
+        if (next) {
+            const fileError = validateRecordFile(next);
+            if (fileError) {
+                setError(fileError);
+                setFile(null);
+                e.target.value = '';
+                return;
+            }
+        }
+        setFile(next);
     };
 
     return (
@@ -100,10 +122,13 @@ function UploadRecordModal({ onClose, onSubmit }) {
                         </label>
                         <input
                             type="file"
-                            accept=".pdf,.doc,.docx,.jpg,.png"
-                            onChange={(e) => setFile(e.target.files[0])}
+                            accept=".pdf,.doc,.docx,.jpg,.jpeg,.png,application/pdf,image/jpeg,image/png"
+                            onChange={handleFileChange}
                             className="w-full cursor-pointer rounded-lg border border-line bg-muted px-3 py-2 text-sm text-slate-500 outline-none file:mr-3 file:cursor-pointer file:rounded-md file:border-0 file:bg-teal-50 file:px-3 file:py-1 file:text-xs file:text-teal-700"
                         />
+                        <p className="mt-1 text-[11px] text-slate-500">
+                            PDF, DOC, DOCX, JPG or PNG — max 25 MB
+                        </p>
                         {file && (
                             <p className="mt-1 text-[11px] text-teal-700">Selected: {file.name}</p>
                         )}
