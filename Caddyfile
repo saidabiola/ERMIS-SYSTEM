@@ -1,14 +1,24 @@
-# TLS termination for ExamTrack (Let's Encrypt via Caddy)
-# Grey-cloud DNS at Cloudflare must point here first.
+# TLS for ExamTrack — Let's Encrypt via Caddy
+# Keep Cloudflare A records on DNS only (grey cloud) until HTTPS works.
+
+{
+	email admin@examtrack.co.ke
+}
 
 examtrack.co.ke, www.examtrack.co.ke {
 	encode gzip
 
-	# Forward real client IP + HTTPS scheme to nginx → Express (secure cookies)
-	reverse_proxy ermis-frontend:80 {
-		header_up X-Real-IP {remote_host}
-		header_up X-Forwarded-For {remote_host}
-		header_up X-Forwarded-Proto {scheme}
-		header_up Host {host}
+	# Proxy everything EXCEPT ACME challenges.
+	# Challenges must be answered by Caddy itself (tiny token body).
+	# If nginx serves the SPA HTML instead, Let's Encrypt returns:
+	# "reader size limit exceeded" / unauthorized
+	@app not path /.well-known/acme-challenge/*
+	handle @app {
+		reverse_proxy ermis-frontend:80 {
+			header_up X-Real-IP {remote_host}
+			header_up X-Forwarded-For {remote_host}
+			header_up X-Forwarded-Proto {scheme}
+			header_up Host {host}
+		}
 	}
 }
