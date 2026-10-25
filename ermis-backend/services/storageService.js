@@ -136,6 +136,97 @@ async function openDownload(key) {
   };
 }
 
+/**
+ * Copy an existing stored object to another key.
+ * Uses Get + Put so the current IAM policy (no s3:CopyObject) is enough.
+ * Returns false when the source is missing.
+ */
+async function copyObject(sourceKey, destKey) {
+  if (!sourceKey || !destKey || sourceKey === destKey) return false;
+
+  if (isS3Enabled()) {
+    try {
+      const out = await getS3Client().send(
+        new GetObjectCommand({
+          Bucket: getBucket(),
+          Key: sourceKey,
+        })
+      );
+      await getS3Client().send(
+        new PutObjectCommand({
+          Bucket: getBucket(),
+          Key: destKey,
+          Body: out.Body,
+          ContentType: out.ContentType || "application/octet-stream",
+        })
+      );
+      return true;
+    } catch (err) {
+      if (err && (err.name === "NoSuchKey" || err.$metadata?.httpStatusCode === 404)) {
+        return false;
+      }
+      throw err;
+    }
+  }
+
+  try {
+    const src = localPathForKey(sourceKey);
+    const dest = localPathForKey(destKey);
+    await fsPromises.mkdir(path.dirname(dest), { recursive: true });
+    await fsPromises.copyFile(src, dest);
+    return true;
+  } catch (err) {
+    if (err && err.code === "ENOENT") return false;
+    throw err;
+  }
+}
+
+async function writeBuffer(key, buffer, contentType = "application/json") {
+  if (isS3Enabled()) {
+    await getS3Client().send(
+      new PutObjectCommand({
+        Bucket: getBucket(),
+        Key: key,
+        Body: buffer,
+        ContentType: contentType,
+      })
+    );
+    return;
+  }
+
+  const dest = localPathForKey(key);
+  await fsPromises.mkdir(path.dirname(dest), { recursive: true });
+  await fsPromises.writeFile(dest, buffer);
+}
+
+async function readBuffer(key) {
+  if (isS3Enabled()) {
+    try {
+      const out = await getS3Client().send(
+        new GetObjectCommand({
+          Bucket: getBucket(),
+          Key: key,
+        })
+      );
+      const chunks = [];
+      for await (const chunk of out.Body) chunks.push(chunk);
+      return Buffer.concat(chunks);
+    } catch (err) {
+      if (err && (err.name === "NoSuchKey" || err.$metadata?.httpStatusCode === 404)) {
+        return null;
+      }
+      throw err;
+    }
+  }
+
+  try {
+    return await fsPromises.readFile(localPathForKey(key));
+  } catch (err) {
+    if (err && err.code === "ENOENT") return null;
+    throw err;
+  }
+}
+
 async function deleteObject(key) {
   if (!key) return;
 
@@ -165,6 +256,9 @@ module.exports = {
   makeKey,
   saveUpload,
   openDownload,
+  copyObject,
+  writeBuffer,
+  readBuffer,
   deleteObject,
   UPLOADS_DIR,
 };

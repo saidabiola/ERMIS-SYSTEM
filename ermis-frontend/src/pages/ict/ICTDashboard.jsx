@@ -107,7 +107,7 @@ function ICTDashboard() {
       "Restore this backup?\n\n" +
         "• All current records will be replaced\n" +
         "• Users will be upserted from the backup\n" +
-        "• Uploaded files on disk are NOT restored\n\n" +
+        "• Attachment snapshots from this backup are restored when present\n\n" +
         "This cannot be undone (unless you restore another backup)."
     );
     if (!ok) return;
@@ -118,6 +118,9 @@ function ICTDashboard() {
       const result = await api.post(`/ict/backups/${backupId}/restore`);
       setRestoreMessage(
         `Restored ${result.recordsRestored} records, ${result.usersUpserted} users` +
+          (typeof result.filesRestored === "number"
+            ? `, ${result.filesRestored} files`
+            : "") +
           (result.usersSkipped ? ` (${result.usersSkipped} users skipped — old backup without passwords)` : "")
       );
       await checkSystemHealth();
@@ -191,8 +194,8 @@ function ICTDashboard() {
             </div>
             <div className="p-5">
               <p className="text-[13px] text-slate-500 mb-5">
-                Create a JSON backup of users and records. New backups include
-                password hashes so restore can recreate logins.
+                Create a JSON backup of users and records, and snapshot each
+                attachment (S3 or local) so a restore can put the files back.
               </p>
 
               <button
@@ -246,7 +249,7 @@ function ICTDashboard() {
             <div className="p-5">
               <p className="text-[13px] text-slate-500 mb-4">
                 Replaces all records with the chosen backup. Users are merged by
-                email. Uploaded files on disk are not restored.
+                email. New backups also restore the attachment snapshot.
               </p>
 
               <button

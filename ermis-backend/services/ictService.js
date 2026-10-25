@@ -5,9 +5,61 @@ const userRepository = require("../repositories/userRepository");
 const recordRepository = require("../repositories/recordRepository");
 const backupRepository = require("../repositories/backupRepository");
 const auditService = require("./auditService");
+const storageService = require("./storageService");
 const AppError = require("../utils/AppError");
 
 const BACKUPS_DIR = path.join(__dirname, "..", "backups");
+
+function snapshotKeyFor(fileName, objectKey) {
+  const folder = String(fileName).replace(/\.json$/, "");
+  return `backups/files/${folder}/${objectKey}`;
+}
+
+function manifestKeyFor(fileName) {
+  return `backups/manifests/${fileName}`;
+}
+
+/**
+ * Copy one attachment into the backup snapshot.
+ * S3: another object in the same bucket. Local: a file under backups/.
+ */
+async function snapshotAttachment(liveKey, snapshotKey) {
+  if (!liveKey) return false;
+
+  if (storageService.isS3Enabled()) {
+    return storageService.copyObject(liveKey, snapshotKey);
+  }
+
+  const src = path.join(storageService.UPLOADS_DIR, liveKey);
+  const dest = path.join(BACKUPS_DIR, snapshotKey);
+  try {
+    await fs.mkdir(path.dirname(dest), { recursive: true });
+    await fs.copyFile(src, dest);
+    return true;
+  } catch (err) {
+    if (err && err.code === "ENOENT") return false;
+    throw err;
+  }
+}
+
+async function restoreAttachment(snapshotKey, liveKey) {
+  if (!liveKey || !snapshotKey) return false;
+
+  if (storageService.isS3Enabled()) {
+    return storageService.copyObject(snapshotKey, liveKey);
+  }
+
+  const src = path.join(BACKUPS_DIR, snapshotKey);
+  const dest = path.join(storageService.UPLOADS_DIR, liveKey);
+  try {
+    await fs.mkdir(path.dirname(dest), { recursive: true });
+    await fs.copyFile(src, dest);
+    return true;
+  } catch (err) {
+    if (err && err.code === "ENOENT") return false;
+    throw err;
+  }
+}
 
 async function getHealth() {
   const dbReady = mongoose.connection.readyState === 1;
@@ -44,17 +96,41 @@ async function createBackup(userId) {
       recordRepository.findAll(),
     ]);
 
+    const fileName = `backup-${Date.now()}.json`;
+
+    let filesCopied = 0;
+    let filesMissing = 0;
+    for (const record of records) {
+      if (!record.file) continue;
+      const ok = await snapshotAttachment(
+        record.file,
+        snapshotKeyFor(fileName, record.file)
+      );
+      if (ok) filesCopied += 1;
+      else filesMissing += 1;
+    }
+
     const payload = {
       createdAt: new Date().toISOString(),
+      storage: storageService.isS3Enabled() ? "s3" : "local",
+      filesCopied,
+      filesMissing,
       users,
       records,
     };
 
-    const fileName = `backup-${Date.now()}.json`;
     const filePath = path.join(BACKUPS_DIR, fileName);
     const json = JSON.stringify(payload, null, 2);
 
     await fs.writeFile(filePath, json, "utf8");
+
+    if (storageService.isS3Enabled()) {
+      await storageService.writeBuffer(
+        manifestKeyFor(fileName),
+        Buffer.from(json, "utf8"),
+        "application/json"
+      );
+    }
 
     const sizeBytes = Buffer.byteLength(json, "utf8");
 
@@ -71,6 +147,9 @@ async function createBackup(userId) {
       filePath: backup.filePath,
       sizeBytes: backup.sizeBytes,
       createdAt: backup.createdAt,
+      filesCopied,
+      filesMissing,
+      storage: payload.storage,
     };
   } catch (err) {
     await backupRepository.create({
@@ -114,7 +193,8 @@ async function getLatestBackup() {
  * Restore users + records from a successful backup file.
  * - Users: upsert by email (does not delete extra users)
  * - Records: replace all current records with backup contents
- * Uploaded binary files on disk are NOT restored (filenames only).
+ * Attachments are copied back from the snapshot taken with this backup
+ * (S3 prefix or local backups/ folder). Older backups have no snapshot.
  */
 async function restoreBackup(backupId, actor) {
   const backup = await backupRepository.findById(backupId);
@@ -128,7 +208,13 @@ async function restoreBackup(backupId, actor) {
     const raw = await fs.readFile(fullPath, "utf8");
     payload = JSON.parse(raw);
   } catch (_) {
-    throw new AppError("Backup file missing or unreadable", 404);
+    const remote = storageService.isS3Enabled()
+      ? await storageService.readBuffer(manifestKeyFor(backup.filePath))
+      : null;
+    if (!remote) {
+      throw new AppError("Backup file missing or unreadable", 404);
+    }
+    payload = JSON.parse(remote.toString("utf8"));
   }
 
   const users = Array.isArray(payload.users) ? payload.users : [];
@@ -161,6 +247,18 @@ async function restoreBackup(backupId, actor) {
     await recordRepository.insertMany(recordDocs);
   }
 
+  let filesRestored = 0;
+  let filesMissing = 0;
+  for (const record of recordDocs) {
+    if (!record.file) continue;
+    const ok = await restoreAttachment(
+      snapshotKeyFor(backup.filePath, record.file),
+      record.file
+    );
+    if (ok) filesRestored += 1;
+    else filesMissing += 1;
+  }
+
   await auditService.log({
     action: "BACKUP_RESTORED",
     actor,
@@ -172,6 +270,8 @@ async function restoreBackup(backupId, actor) {
       usersUpserted,
       usersSkipped,
       recordsRestored: recordDocs.length,
+      filesRestored,
+      filesMissing,
     },
   });
 
@@ -181,8 +281,12 @@ async function restoreBackup(backupId, actor) {
     usersUpserted,
     usersSkipped,
     recordsRestored: recordDocs.length,
+    filesRestored,
+    filesMissing,
     note:
-      "Uploaded files on disk are not restored — only database records/users. Create a fresh backup after major restores.",
+      filesRestored > 0
+        ? "Database and attachment snapshots were restored."
+        : "Database restored. This backup had no attachment snapshot (created before file backups). Live S3 files were left as they are.",
   };
 }
 
