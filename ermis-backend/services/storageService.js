@@ -152,17 +152,20 @@ async function copyObject(sourceKey, destKey) {
           Key: sourceKey,
         })
       );
+      const chunks = [];
+      for await (const chunk of out.Body) chunks.push(chunk);
       await getS3Client().send(
         new PutObjectCommand({
           Bucket: getBucket(),
           Key: destKey,
-          Body: out.Body,
+          Body: Buffer.concat(chunks),
           ContentType: out.ContentType || "application/octet-stream",
         })
       );
       return true;
     } catch (err) {
-      if (err && (err.name === "NoSuchKey" || err.$metadata?.httpStatusCode === 404)) {
+      const status = err?.$metadata?.httpStatusCode;
+      if (err && (err.name === "NoSuchKey" || err.name === "NotFound" || status === 404)) {
         return false;
       }
       throw err;

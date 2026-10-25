@@ -102,12 +102,17 @@ async function createBackup(userId) {
     let filesMissing = 0;
     for (const record of records) {
       if (!record.file) continue;
-      const ok = await snapshotAttachment(
-        record.file,
-        snapshotKeyFor(fileName, record.file)
-      );
-      if (ok) filesCopied += 1;
-      else filesMissing += 1;
+      try {
+        const ok = await snapshotAttachment(
+          record.file,
+          snapshotKeyFor(fileName, record.file)
+        );
+        if (ok) filesCopied += 1;
+        else filesMissing += 1;
+      } catch (copyErr) {
+        console.error("Backup file snapshot failed:", record.file, copyErr.message);
+        filesMissing += 1;
+      }
     }
 
     const payload = {

@@ -88,13 +88,19 @@ function ICTDashboard() {
     setBackupSuccess(false);
     setRestoreMessage("");
     try {
-      await api.post("/ict/backups");
+      const result = await api.post("/ict/backups");
       setBackupSuccess(true);
+      setRestoreMessage(
+        result?.storage === "s3"
+          ? `Backup saved. ${result.filesCopied ?? 0} files copied to S3.`
+          : "Backup saved on the server disk only (S3 is off)."
+      );
       await loadLatestBackup();
       await loadBackups();
       setTimeout(() => setBackupSuccess(false), 3000);
-    } catch (_) {
+    } catch (err) {
       setBackupSuccess(false);
+      setRestoreMessage(err.message || "Backup failed");
     } finally {
       setBackupLoading(false);
     }
