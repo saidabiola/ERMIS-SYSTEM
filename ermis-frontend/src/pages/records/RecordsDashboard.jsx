@@ -1,5 +1,5 @@
 import { useState, useEffect } from 'react'
-import RecordsSidebar from '../../components/records/RecordsSidebar';
+import RecordsShell from '../../components/records/RecordsShell';
 import RecordsTable from '../../components/records/RecordsTable';
 import UploadRecordModal from '../../components/records/UploadRecordModal';
 import EditRecordModal from '../../components/records/EditRecordModal';
@@ -84,14 +84,10 @@ function RecordsDashboard(){
 
     return (
         
-    <div className="min-h-screen bg-canvas flex overflow-hidden">
-
-      <RecordsSidebar user={currentUser} />
-
-      <div className="flex-1 p-6 overflow-y-auto">
+    <RecordsShell user={currentUser}>
 
         {/* Header */}
-        <div className="flex items-center justify-between mb-6">
+        <div className="flex flex-col gap-3 sm:flex-row sm:items-center sm:justify-between mb-6">
           <div>
             <h1 className="text-lg font-medium text-slate-900">
               Records management
@@ -102,7 +98,7 @@ function RecordsDashboard(){
           </div>
           <button
             onClick={() => setShowUploadModal(true)}
-            className="flex items-center gap-1.5 bg-teal-600 hover:bg-teal-500 text-white text-[13px] font-medium px-4 py-2 rounded-lg transition shadow-sm shadow-teal-700/20"
+            className="flex items-center justify-center gap-1.5 bg-teal-600 hover:bg-teal-500 text-white text-[13px] font-medium px-4 py-2.5 rounded-lg transition shadow-sm shadow-teal-700/20 sm:py-2"
           >
             <i className="ti ti-upload" style={{fontSize: 14}} aria-hidden="true"></i>
             Upload record
@@ -110,7 +106,7 @@ function RecordsDashboard(){
         </div>
 
         {/* Stats — total comes from API (all matching rows), not just this page */}
-        <div className="grid grid-cols-3 gap-3 mb-6">
+        <div className="grid grid-cols-3 gap-2 sm:gap-3 mb-6">
           {[
             {
               value: total,
@@ -133,7 +129,7 @@ function RecordsDashboard(){
           ].map((stat) => (
             <div
               key={stat.label}
-              className="relative overflow-hidden rounded-xl px-5 py-4 min-h-[108px] shadow-sm"
+              className="relative overflow-hidden rounded-xl px-4 py-3 sm:px-5 sm:py-4 min-h-[96px] sm:min-h-[108px] shadow-sm"
               style={{ backgroundColor: 'var(--ermis-brand-teal)' }}
             >
               {/* Diagonal sheen — same glossy cut as reference */}
@@ -146,14 +142,14 @@ function RecordsDashboard(){
               />
               <div className="relative z-10 flex items-start justify-between gap-3">
                 <div>
-                  <p className="text-3xl font-bold text-white leading-none tracking-tight">
+                  <p className="text-2xl sm:text-3xl font-bold text-white leading-none tracking-tight">
                     {stat.value}
                   </p>
-                  <p className="mt-2 text-[14px] font-medium text-white">{stat.label}</p>
+                  <p className="mt-2 text-[13px] sm:text-[14px] font-medium text-white leading-snug">{stat.label}</p>
                   <p className="mt-0.5 text-[12px] text-white/70">{stat.sub}</p>
                 </div>
                 <i
-                  className={`ti ${stat.icon} text-white/90 shrink-0 mt-0.5`}
+                  className={`ti ${stat.icon} hidden sm:block text-white/90 shrink-0 mt-0.5`}
                   style={{ fontSize: 20 }}
                   aria-hidden="true"
                 ></i>
@@ -170,7 +166,7 @@ function RecordsDashboard(){
             placeholder="Search by school name, code or year..."
             value={search}
             onChange={handleSearch}
-            className="flex-1 bg-transparent text-sm text-slate-800 placeholder:text-slate-400 outline-none"
+            className="flex-1 min-w-0 bg-transparent text-sm text-slate-800 placeholder:text-slate-400 outline-none"
           />
           {search && (
             <button
@@ -184,7 +180,7 @@ function RecordsDashboard(){
 
         {/* Records table */}
         <div className="bg-surface border border-line shadow-panel rounded-xl overflow-hidden">
-          <div className="px-5 py-4 border-b border-line flex items-center justify-between gap-3">
+          <div className="px-4 sm:px-5 py-4 border-b border-line flex flex-col gap-1 sm:flex-row sm:items-center sm:justify-between">
             <h2 className="text-[14px] font-medium text-slate-800">
               {search ? `Results for "${search}"` : 'All records'}
             </h2>
@@ -212,7 +208,7 @@ function RecordsDashboard(){
 
           {/* Pagination controls */}
           {totalPages > 1 && (
-            <div className="flex items-center justify-between gap-3 px-5 py-3 border-t border-line">
+            <div className="flex flex-wrap items-center justify-between gap-3 px-4 sm:px-5 py-3 border-t border-line">
               <button
                 type="button"
                 disabled={page <= 1 || loading}
@@ -257,9 +253,9 @@ function RecordsDashboard(){
                   { label: 'Year of graduation',value: viewingRecord.yearOfGraduation },
                   { label: 'Uploaded on',       value: new Date(viewingRecord.createdAt).toLocaleDateString('en-GB', { day: '2-digit', month: 'long', year: 'numeric' }) },
                 ].map(item => (
-                  <div key={item.label} className="flex justify-between items-center py-2 border-b border-line-subtle">
-                    <span className="text-xs text-slate-500">{item.label}</span>
-                    <span className="text-sm text-slate-700">{item.value}</span>
+                  <div key={item.label} className="flex justify-between items-start gap-3 py-2 border-b border-line-subtle">
+                    <span className="text-xs text-slate-500 shrink-0">{item.label}</span>
+                    <span className="text-sm text-slate-700 text-right break-words">{item.value}</span>
                   </div>
                 ))}
 
@@ -280,8 +276,6 @@ function RecordsDashboard(){
           </div>
         )}
 
-      </div>
-
       {showUploadModal && (
         <UploadRecordModal
           onClose={() => setShowUploadModal(false)}
@@ -297,7 +291,7 @@ function RecordsDashboard(){
         />
       )}
 
-    </div>
+    </RecordsShell>
   );
     
 }

@@ -1,13 +1,19 @@
 import { useNavigate, useLocation } from "react-router-dom";
 import { logout } from "../../utils/auth";
 
-export default function RecordsSidebar({ user }) {
+export default function RecordsSidebar({ user, open = false, onClose }) {
     const navigate = useNavigate();
     const location = useLocation();
 
     const handleLogout = async () => {
+        onClose?.();
         await logout();
         navigate('/');
+    };
+
+    const go = (path) => {
+        navigate(path);
+        onClose?.();
     };
 
     const navItems = [
@@ -23,9 +29,9 @@ export default function RecordsSidebar({ user }) {
         .join('')
         .toUpperCase() || 'RD';
 
-    return (
+    const Panel = () => (
         <div
-            className="relative w-56 min-h-screen flex flex-col px-3 py-5 shrink-0 overflow-hidden border-r border-teal-800/30"
+            className="relative h-full w-full flex flex-col px-3 py-5 overflow-hidden border-r border-teal-800/30"
             style={{ backgroundColor: 'var(--ermis-brand-teal)' }}
         >
             {/* Soft glow — same feel as login left panel */}
@@ -50,7 +56,7 @@ export default function RecordsSidebar({ user }) {
                 {navItems.map(item => (
                     <button
                         key={item.path}
-                        onClick={() => navigate(item.path)}
+                        onClick={() => go(item.path)}
                         className={`flex items-center gap-2.5 px-3 py-2 rounded-lg text-[13px] mb-0.5 w-full text-left transition
                             ${location.pathname === item.path
                                 ? 'bg-white/20 text-white font-medium'
@@ -84,5 +90,27 @@ export default function RecordsSidebar({ user }) {
                 </div>
             </div>
         </div>
+    );
+
+    return (
+        <>
+            <div className="hidden md:block w-56 shrink-0 h-screen">
+                <Panel />
+            </div>
+
+            {open && (
+                <div className="fixed inset-0 z-50 md:hidden">
+                    <button
+                        type="button"
+                        className="absolute inset-0 bg-slate-900/50"
+                        aria-label="Close menu"
+                        onClick={onClose}
+                    />
+                    <div className="relative h-full w-72 max-w-[85vw] shadow-xl">
+                        <Panel />
+                    </div>
+                </div>
+            )}
+        </>
     );
 }

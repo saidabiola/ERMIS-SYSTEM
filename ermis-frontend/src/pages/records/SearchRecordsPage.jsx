@@ -1,5 +1,5 @@
 import { useState, useEffect } from 'react';
-import RecordsSidebar from '../../components/records/RecordsSidebar';
+import RecordsShell from '../../components/records/RecordsShell';
 import RecordsTable from '../../components/records/RecordsTable';
 import EditRecordModal from '../../components/records/EditRecordModal';
 import RecordFileLink from '../../components/records/RecordFileLink';
@@ -100,10 +100,7 @@ function SearchRecordsPage() {
   };
 
   return (
-    <div className="min-h-screen bg-canvas flex overflow-hidden">
-      <RecordsSidebar user={currentUser} />
-
-      <div className="flex-1 p-6 overflow-y-auto">
+    <RecordsShell user={currentUser}>
         <div className="mb-6">
           <h1 className="text-lg font-medium text-slate-900">Search records</h1>
           <p className="text-sm text-slate-500 mt-0.5">
@@ -121,7 +118,7 @@ function SearchRecordsPage() {
             placeholder="Type a school name, code or year..."
             value={search}
             onChange={(e) => setSearch(e.target.value)}
-            className="flex-1 bg-transparent text-sm text-slate-800 placeholder:text-slate-400 outline-none"
+            className="flex-1 min-w-0 bg-transparent text-sm text-slate-800 placeholder:text-slate-400 outline-none"
           />
           {search && (
             <button
@@ -141,7 +138,7 @@ function SearchRecordsPage() {
         </form>
 
         <div className="bg-surface border border-line shadow-panel rounded-xl overflow-hidden">
-          <div className="px-5 py-4 border-b border-line flex items-center justify-between gap-3">
+          <div className="px-4 sm:px-5 py-4 border-b border-line flex flex-col gap-1 sm:flex-row sm:items-center sm:justify-between">
             <h2 className="text-[14px] font-medium text-slate-800">
               {!submitted
                 ? 'Enter a term and press Search'
@@ -260,7 +257,6 @@ function SearchRecordsPage() {
             </div>
           </div>
         )}
-      </div>
 
       {editingRecord && (
         <EditRecordModal
@@ -269,7 +265,7 @@ function SearchRecordsPage() {
           onSubmit={handleEdit}
         />
       )}
-    </div>
+    </RecordsShell>
   );
 }
 

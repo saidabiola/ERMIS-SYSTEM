@@ -1,5 +1,5 @@
 import { useState, useEffect } from 'react';
-import RecordsSidebar from '../../components/records/RecordsSidebar';
+import RecordsShell from '../../components/records/RecordsShell';
 import RecordsTable from '../../components/records/RecordsTable';
 import EditRecordModal from '../../components/records/EditRecordModal';
 import RecordFileLink from '../../components/records/RecordFileLink';
@@ -70,10 +70,7 @@ function AllRecordsPage() {
   };
 
   return (
-    <div className="min-h-screen bg-canvas flex overflow-hidden">
-      <RecordsSidebar user={currentUser} />
-
-      <div className="flex-1 p-6 overflow-y-auto">
+    <RecordsShell user={currentUser}>
         <div className="mb-6">
           <h1 className="text-lg font-medium text-slate-900">All records</h1>
           <p className="text-sm text-slate-500 mt-0.5">
@@ -91,7 +88,7 @@ function AllRecordsPage() {
               setSearch(e.target.value);
               setPage(1);
             }}
-            className="flex-1 bg-transparent text-sm text-slate-800 placeholder:text-slate-400 outline-none"
+            className="flex-1 min-w-0 bg-transparent text-sm text-slate-800 placeholder:text-slate-400 outline-none"
           />
           {search && (
             <button
@@ -108,7 +105,7 @@ function AllRecordsPage() {
         </div>
 
         <div className="bg-surface border border-line shadow-panel rounded-xl overflow-hidden">
-          <div className="px-5 py-4 border-b border-line flex items-center justify-between gap-3">
+          <div className="px-4 sm:px-5 py-4 border-b border-line flex flex-col gap-1 sm:flex-row sm:items-center sm:justify-between">
             <h2 className="text-[14px] font-medium text-slate-800">Records list</h2>
             <p className="text-[12px] text-slate-500 shrink-0">
               {total === 0
@@ -210,7 +207,6 @@ function AllRecordsPage() {
             </div>
           </div>
         )}
-      </div>
 
       {editingRecord && (
         <EditRecordModal
@@ -219,7 +215,7 @@ function AllRecordsPage() {
           onSubmit={handleEdit}
         />
       )}
-    </div>
+    </RecordsShell>
   );
 }
 

@@ -9,7 +9,70 @@ function RecordsTable({ records, onView, onEdit, onDelete }) {
   }
 
   return (
-    <div className="overflow-x-auto">
+    <>
+    <div className="md:hidden divide-y divide-line-subtle">
+      {records.map((record) => (
+        <div key={record._id} className="px-4 py-3">
+          <div className="flex items-start justify-between gap-3">
+            <div className="min-w-0">
+              <p className="text-[14px] font-medium text-slate-800 break-words">
+                {record.nameOfSchool}
+              </p>
+              <p className="text-[12px] text-slate-500 mt-0.5">
+                {record.schoolCode} · {record.yearOfGraduation}
+              </p>
+            </div>
+            <StatusBadge status={record.status} />
+          </div>
+          <div className="mt-2 flex items-center justify-between gap-3">
+            <p className="text-[12px] text-slate-500">
+              {record.file ? "File attached" : "No file"}
+              {record.createdAt
+                ? ` · ${new Date(record.createdAt).toLocaleDateString("en-GB", {
+                    day: "2-digit",
+                    month: "short",
+                    year: "numeric",
+                  })}`
+                : ""}
+            </p>
+            <div className="flex items-center gap-3 shrink-0">
+              {onView && (
+                <button
+                  type="button"
+                  onClick={() => onView(record)}
+                  className="text-slate-500 hover:text-teal-600 transition"
+                  aria-label="View record"
+                >
+                  <i className="ti ti-eye" style={{ fontSize: 16 }} aria-hidden="true"></i>
+                </button>
+              )}
+              {onEdit && (
+                <button
+                  type="button"
+                  onClick={() => onEdit(record)}
+                  className="text-slate-500 hover:text-teal-600 transition"
+                  aria-label="Edit record"
+                >
+                  <i className="ti ti-pencil" style={{ fontSize: 16 }} aria-hidden="true"></i>
+                </button>
+              )}
+              {onDelete && (
+                <button
+                  type="button"
+                  onClick={() => onDelete(record)}
+                  className="text-slate-500 hover:text-red-600 transition"
+                  aria-label="Delete record"
+                >
+                  <i className="ti ti-trash" style={{ fontSize: 16 }} aria-hidden="true"></i>
+                </button>
+              )}
+            </div>
+          </div>
+        </div>
+      ))}
+    </div>
+
+    <div className="hidden md:block overflow-x-auto">
       <table className="w-full text-sm">
         <thead>
           <tr className="bg-slate-50 border-b border-line">
@@ -119,6 +182,7 @@ function RecordsTable({ records, onView, onEdit, onDelete }) {
         </tbody>
       </table>
     </div>
+    </>
   );
 }
 

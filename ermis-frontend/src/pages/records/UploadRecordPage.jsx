@@ -1,6 +1,6 @@
 import { useState } from 'react';
 import { useNavigate } from 'react-router-dom';
-import RecordsSidebar from '../../components/records/RecordsSidebar';
+import RecordsShell from '../../components/records/RecordsShell';
 import { api } from '../../utils/api';
 import { decodeAccessToken } from '../../utils/auth';
 import { validateRecordFile } from '../../utils/recordUpload';
@@ -57,10 +57,7 @@ function UploadRecordPage() {
   };
 
   return (
-    <div className="min-h-screen bg-canvas flex overflow-hidden">
-      <RecordsSidebar user={currentUser} />
-
-      <div className="flex-1 p-6 overflow-y-auto">
+    <RecordsShell user={currentUser}>
         <div className="mb-6">
           <h1 className="text-lg font-medium text-slate-900">Upload record</h1>
           <p className="text-sm text-slate-500 mt-0.5">
@@ -167,8 +164,7 @@ function UploadRecordPage() {
             </div>
           </form>
         </div>
-      </div>
-    </div>
+    </RecordsShell>
   );
 }
 
